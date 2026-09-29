@@ -37,6 +37,9 @@ def main():
     swin_parser.add_argument(
         "--epochs", type=int, default=None,
         help="Max training epochs (default: 200)")
+    swin_parser.add_argument(
+        "--patient-list", type=str, default=None,
+        help="Path to text file with one patient ID per line to filter patients")
 
     args = parser.parse_args()
 
@@ -54,6 +57,7 @@ def main():
             output_dir=args.output_dir,
             composites_dir=args.composites_dir,
             num_epochs=args.epochs,
+            patient_list=args.patient_list,
         )
 
 

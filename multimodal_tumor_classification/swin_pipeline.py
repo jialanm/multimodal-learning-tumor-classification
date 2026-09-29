@@ -4,6 +4,7 @@ import os
 import json
 import glob
 import time
+import pickle
 import numpy as np
 import pandas as pd
 import torch
@@ -13,6 +14,7 @@ from PIL import Image
 from torchvision import transforms, models
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.metrics import classification_report, f1_score, balanced_accuracy_score, confusion_matrix
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.utils.class_weight import compute_class_weight
 from typing import Optional
 from itertools import product
@@ -27,7 +29,8 @@ from .config import (
 from .clinical import load_clinical_dataframe, encode_clinical_features
 from .evaluation import (
     evaluate_predictions, plot_loss_curves, plot_roc_curves,
-    plot_confusion_matrix, plot_per_class_f1, save_summary_txt,
+    plot_confusion_matrix, plot_per_class_f1, plot_embedding_similarity_heatmap,
+    save_summary_txt,
 )
 
 IMG_TRANSFORM = transforms.Compose([
@@ -118,9 +121,12 @@ class MultimodalClassifier(nn.Module):
             nn.Linear(hidden_dim, NUM_CLASSES),
         )
 
+    def get_fused_embedding(self, img_feats, clin_feats):
+        """Return the fused embedding (2*proj_dim) before the classifier head."""
+        return torch.cat([self.img_proj(img_feats), self.clin_proj(clin_feats)], dim=1)
+
     def forward(self, img_feats, clin_feats):
-        fused = torch.cat([self.img_proj(img_feats), self.clin_proj(clin_feats)], dim=1)
-        return self.classifier(fused)
+        return self.classifier(self.get_fused_embedding(img_feats, clin_feats))
 
 
 # =============================================================================
@@ -313,7 +319,7 @@ def train_final_with_history(img_tr, clin_tr, y_tr, img_val, clin_val, y_val,
 # =============================================================================
 
 def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional[str] = None,
-                      num_epochs: Optional[int] = None):
+                      num_epochs: Optional[int] = None, patient_list: Optional[str] = None):
     """Full Swin pipeline: extract features -> grid search CV -> train final -> evaluate."""
     np.random.seed(RANDOM_SEED)
     torch.manual_seed(RANDOM_SEED)
@@ -338,6 +344,17 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
     print("PHASE 1: Loading data")
     print("=" * 60)
     patient_ids, labels, clinical_df = build_patient_list(composites_dir)
+
+    # Filter to patient list if provided
+    if patient_list is not None:
+        with open(patient_list) as f:
+            keep_pids = set(line.strip() for line in f if line.strip())
+        keep_mask = [pid in keep_pids for pid in patient_ids]
+        patient_ids = [pid for pid, k in zip(patient_ids, keep_mask) if k]
+        labels = labels[keep_mask]
+        clinical_df = clinical_df[keep_mask].reset_index(drop=True)
+        print(f"Filtered to {len(patient_ids)} patients from {patient_list}")
+
     print(f"Patients: {len(patient_ids)}")
     print(f"Grade distribution: {dict(Counter(labels.tolist()))}")
 
@@ -377,8 +394,8 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
         "class_weight": [None, "balanced"],
         "dropout": [0.3, 0.5, 0.7],
         "hidden_dim": [64, 128],
-        "weight_decay": [0, 1e-4],
-        "proj_dim": [32, 64],
+        "weight_decay": [1e-4],
+        "proj_dim": [64],
         "batch_size": [16],
     }
 
@@ -444,6 +461,23 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
     plot_confusion_matrix(y_test, test_preds, os.path.join(output_dir, "confusion_matrix.png"))
     plot_per_class_f1(y_test, test_preds, os.path.join(output_dir, "f1_scores.png"))
 
+    # Embedding cosine similarity heatmap by tumor grade
+    clin_all, _ = encode_clinical_features(clinical_df, scaler=scaler, fit_scaler=False)
+    final_model.eval()
+    with torch.no_grad():
+        img_t = torch.tensor(img_feats, dtype=torch.float32).to(device_mlp)
+        clin_t = torch.tensor(clin_all, dtype=torch.float32).to(device_mlp)
+        embeddings = final_model.get_fused_embedding(img_t, clin_t).cpu().numpy()
+
+    sim_matrix = np.zeros((NUM_CLASSES, NUM_CLASSES))
+    for i in range(NUM_CLASSES):
+        for j in range(NUM_CLASSES):
+            pairwise = cosine_similarity(embeddings[labels == i], embeddings[labels == j])
+            sim_matrix[i, j] = pairwise.mean()
+
+    plot_embedding_similarity_heatmap(
+        sim_matrix, os.path.join(output_dir, "embedding_similarity.png"))
+
     save_summary_txt(
         os.path.join(output_dir, "experiment_summary.txt"),
         patient_ids, labels, train_idx, test_idx,
@@ -497,3 +531,12 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
     with open(results_path, "w") as f:
         json.dump(save_data, f, indent=2)
     print(f"\nResults saved to {results_path}")
+
+    # Save artifacts for downstream pipelines (e.g. DMGI)
+    np.save(os.path.join(output_dir, "fused_embeddings.npy"), embeddings)
+    torch.save(final_model.state_dict(), os.path.join(output_dir, "swin_model.pt"))
+    with open(os.path.join(output_dir, "best_hyperparams.json"), "w") as f:
+        json.dump({k: (v if v is not None else "none") for k, v in (best_params or {}).items()}, f, indent=2)
+    with open(os.path.join(output_dir, "clinical_scaler.pkl"), "wb") as f:
+        pickle.dump(scaler, f)
+    print(f"Saved downstream artifacts (fused_embeddings, model, hyperparams, scaler) to {output_dir}")

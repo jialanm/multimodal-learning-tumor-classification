@@ -176,6 +176,37 @@ def plot_per_class_f1(y_true, y_pred, out_path):
     print(f"  Saved {out_path}")
 
 
+def plot_embedding_similarity_heatmap(sim_matrix, out_path):
+    """3x3 heatmap of average pairwise cosine similarity between grade embeddings."""
+    mask = np.tri(NUM_CLASSES, k=-1, dtype=bool)  # mask upper triangle (k=-1 on transposed)
+    mask = ~mask & ~np.eye(NUM_CLASSES, dtype=bool)  # mask strictly upper triangle
+    masked = np.ma.array(sim_matrix, mask=mask)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    cmap = plt.cm.Reds.copy()
+    cmap.set_bad(color="white")
+    im = ax.imshow(masked, interpolation="nearest", cmap=cmap, vmin=0, vmax=1)
+    fig.colorbar(im, ax=ax, shrink=0.8)
+    ax.set_xticks(range(NUM_CLASSES))
+    ax.set_yticks(range(NUM_CLASSES))
+    ax.set_xticklabels(LABEL_NAMES, rotation=30, ha="right")
+    ax.set_yticklabels(LABEL_NAMES)
+    ax.set_xlabel("Grade")
+    ax.set_ylabel("Grade")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    for i in range(NUM_CLASSES):
+        for j in range(i + 1):  # lower triangle + diagonal
+            ax.text(j, i, f"{sim_matrix[i, j]:.3f}", ha="center", va="center",
+                    color="white" if sim_matrix[i, j] > 0.5 else "black",
+                    fontsize=12, fontweight="bold")
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+    print(f"  Saved {out_path}")
+
+
 # =============================================================================
 # TEXT SUMMARY (Swin baseline)
 # =============================================================================
