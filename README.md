@@ -13,17 +13,27 @@ Four baseline approaches are implemented:
 
 ### Full-dataset results
 
-| Method | Patients | Split | Macro F1 | Balanced Acc | Accuracy | Macro AUC |
-|--------|----------|-------|----------|--------------|----------|-----------|
-| Swin-Tiny + MLP | 899 | 80/20 | 0.513 | 0.547 | 0.511 | 0.725 |
-| Swin-Tiny + MLP | 922 | 80/20 | 0.515 | 0.522 | 0.530 | 0.681 |
-| **Graph-Augmented Swin + MLP** | **899** | **60/10/30** | **0.541** | **0.584** | **0.544** | **0.727** |
-| Graph-Augmented Swin + MLP | 922 | 70/10/20 | 0.515 | 0.535 | 0.535 | 0.701 |
-| Graph-Augmented Swin + MLP | 899 | 80/20 | 0.471 | 0.571 | 0.472 | 0.735 |
-| DMGI (LogReg on frozen H) | 899 | 60/10/30 | 0.424 ± 0.020 | -- | 0.529 | -- |
-| DMGI (fine-tuned MLP) | 899 | 60/10/30 | 0.451 ± 0.034 | -- | -- | -- |
+Numbers as reported in the final project report (Figure 3b for the three models below). The report describes the cohort as all 922 patients, split 645 / 92 / 185 for train / validation / test.
 
-Patient counts differ between runs; the 899-patient cohort is listed in `data/patient_id_list.csv`.
+| Method | Macro-F1 | Micro-F1 | Balanced Accuracy |
+|--------|----------|----------|-------------------|
+| Swin-Tiny + MLP | 0.513 | 0.513 | 0.547 |
+| DMGI on Swin features | 0.496 | 0.496 | 0.519 |
+| **Graph-Augmented Swin + MLP (hybrid)** | **0.541** | **0.544** | **0.584** |
+
+The report attributes the graph-augmented gain to density balancing across the four relation graphs: before balancing, the same model scored 0.504 Macro-F1, 0.500 Micro-F1, and 0.540 balanced accuracy (Figure 5). The runs behind these numbers are in `results/swin_899`, `results/graph_augmented_899`, and `results/dmgi_899`.
+
+#### Post-report rerun (all 922 patients, corrected protocol)
+
+After the report, the Swin and graph-augmented final models were found to early-stop on the test set: their validation index was the test index. Both pipelines were fixed to hold a validation split out of the training pool, and all three models were rerun on every patient with a grade label. Same columns as above; the DMGI row is the direct classifier, as in Figure 3b.
+
+| Method | Macro-F1 | Micro-F1 | Balanced Accuracy |
+|--------|----------|----------|-------------------|
+| Swin-Tiny + MLP | 0.481 | 0.486 | 0.512 |
+| DMGI on Swin features | 0.464 | 0.458 | 0.501 |
+| Graph-Augmented Swin + MLP (hybrid) | 0.515 | 0.535 | 0.534 |
+
+In this rerun the lambda sweep selected 0 (every nonzero value lowered CV Macro-F1, 0.449 to 0.462 against 0.480), so the graph-augmented row is a Swin + clinical MLP trained by that pipeline's loop and search with no graph term. Its margin over the Swin row comes from different hyperparameters chosen by two separate CV searches and sits within the fold-to-fold spread of about 0.03 to 0.04. Splits: 644 / 93 / 185 for the two Swin-based models, 552 / 93 / 277 for DMGI. Artifacts: `results/swin_922`, `results/graph_augmented_922`, `results/dmgi_922`.
 
 ### Ovis2 VLM few-shot results (subset)
 
@@ -61,26 +71,24 @@ Detailed per-experiment results (JSON summaries, plots, logs) are committed unde
 │   ├── Annotation_Boxes.xlsx          # Tumor bounding box annotations
 │   └── Clinical_and_Other_Features_Full.xlsx
 ├── output/                            # Runtime artifacts, git-ignored (composites, caches, weights)
-│   ├── ovis2_proportional_crop/       # Composites + results (proportional crop)
-│   ├── ovis2_nocrop/                  # Composites + results (no crop)
-│   ├── ovis2_fixed256_crop/           # Composites + results (256x256 crop)
-│   ├── swin_baseline/                 # Swin feature cache + plots
-│   ├── swin_899/                      # Swin baseline on full dataset (899 patients)
-│   ├── dmgi_baseline/                 # DMGI results + embeddings
-│   ├── graph_augmented/               # Graph-augmented (60/10/30 split)
-│   ├── graph_augmented_80_20/         # Graph-augmented (80/20 split)
-│   └── graph_augmented_70_10_20/      # Graph-augmented (70/10/20 split)
-└── results/                           # Committed summary artifacts (JSON, plots, logs)
-    ├── ovis2_proportional_crop/
-    ├── ovis2_nocrop/
-    ├── ovis2_256crop/
+│   ├── ovis2_proportional_crop/       # Ovis2 composites + results (proportional crop)
+│   ├── ovis2_nocrop/                  # Ovis2 composites + results (no crop)
+│   ├── ovis2_fixed256/composites/     # DCE composites for all 922 patients (256x256 crop)
+│   ├── swin_baseline/                 # Swin feature cache for all 922 patients
+│   ├── swin_922_valsplit/             # Swin run: results, weights, embeddings
+│   ├── graph_augmented_922/           # Graph-augmented run: results, weights, embeddings
+│   └── dmgi_922/                      # DMGI run: results, consensus embeddings
+└── results/                           # Committed summary artifacts (JSON, plots, summaries)
+    ├── ovis2_proportional_crop/       # Ovis2, 60 patients
+    ├── ovis2_nocrop/                  # Ovis2, 60 patients
+    ├── ovis2_256crop/                 # Ovis2, 100 patients
     ├── swin_baseline/                 # Swin, 100 patients
-    ├── swin_899/                      # Swin, 899 patients
-    ├── swin_922/                      # Swin, 922 patients
-    ├── dmgi_baseline/
-    ├── graph_augmented/               # 60/10/30 split
-    ├── graph_augmented_80_20/         # 80/20 split
-    └── graph_augmented_70_10_20/      # 70/10/20 split, 922 patients
+    ├── swin_899/                      # Swin, report run (899 patients)
+    ├── graph_augmented_899/           # Graph-augmented, report run (899 patients)
+    ├── dmgi_899/                      # DMGI, report run (899 patients)
+    ├── swin_922/                      # Swin, post-report rerun (922 patients)
+    ├── graph_augmented_922/           # Graph-augmented, post-report rerun (922 patients)
+    └── dmgi_922/                      # DMGI, post-report rerun (922 patients)
 ```
 
 ## Data
@@ -306,7 +314,7 @@ Clinical branch:  31-d encoded features -------> Linear(31, proj_dim)  -> ReLU -
 - **Frozen image encoder** -- the Swin-Tiny backbone is pretrained on ImageNet and kept frozen. Only the projection layers and classifier head are trained, which avoids overfitting given the dataset size (~900 patients).
 - **Clinical feature encoding** -- the 31-d clinical vector is composed of 20 binary features (0/1), 8 one-hot categorical features, and 3 standard-scaled numerical features.
 - **Balanced batch sampling** -- a `WeightedRandomSampler` oversamples minority classes (Grade 1, Grade 3) so each training batch has roughly equal class representation, counteracting the Grade 2-heavy class imbalance.
-- **Early stopping** -- training halts if the validation loss does not improve for 20 consecutive epochs (patience=20), and the best-performing weights are restored. This prevents overfitting on the small dataset.
+- **Early stopping** -- training halts if the loss on a validation split held out of the training pool does not improve for 20 consecutive epochs (patience=20), and the best-performing weights are restored. The test set plays no part in choosing the epoch.
 
 ## Key Findings from Baselines
 
@@ -335,21 +343,21 @@ All experiments were run on an Apple Silicon Mac with MPS (Metal Performance Sha
 
 | Pipeline | Patients | Total runtime | Notes |
 |----------|----------|---------------|-------|
-| Swin-Tiny + MLP | 899 | ~166 s | Feature extraction + 36-combo grid search (5-fold CV) + final training |
-| Graph-Augmented Swin + MLP | 899 | ~166 s | Same architecture + graph smoothness regularization |
-| DMGI | 899 | ~1559 s | 717 epochs (early stopped from 2000), 5-seed evaluation |
+| Swin-Tiny + MLP | 922 | ~108 s | 36-combo grid search (5-fold CV) + final training, with cached features; add ~90 s for feature extraction |
+| Graph-Augmented Swin + MLP | 922 | ~170 s | 36-combo grid search + 7-value lambda sweep (5-fold CV) + final training |
+| DMGI | 922 | ~1485 s | sup_coef sweep, 619 epochs (early stopped from 2000), 5-seed evaluation |
 | Ovis2 proportional crop | 60 | ~15-20 min | 3 slices/patient, sequential few-shot inference on MPS |
 | Ovis2 no crop | 60 | ~15-20 min | Same as above; full-size images are slower per call |
 | Ovis2 fixed 256x256 | 100 | ~25-35 min | 3 slices/patient, sequential few-shot inference on MPS |
 
 ### Breakdown
 
-- **DICOM processing** -- ~1-2 min for the full dataset (899 patients). Composites are cached as PNGs so this cost is paid only once.
+- **DICOM processing** -- ~1-2 min for the full dataset (922 patients). Composites are cached as PNGs so this cost is paid only once.
 - **Ovis2 model loading** -- ~30-60 s to download and load the 4B-parameter model onto MPS. Sub-second on subsequent runs if weights are cached locally.
 - **Ovis2 per-patient inference** -- ~5-10 s per patient (3 forward passes with `max_new_tokens=16`). The main bottleneck is sequential autoregressive decoding on MPS.
-- **Swin-Tiny feature extraction** -- ~90 s for 899 patients (2697 images). Features are cached to disk (`swin_features.npy`) for reuse.
+- **Swin-Tiny feature extraction** -- ~90 s for 922 patients (2766 images). Features are cached to disk (`swin_features.npy`) for reuse.
 - **Swin grid search** -- ~50 s for 36 hyperparameter combinations x 5 folds. Each fold trains a small MLP (< 1K trainable parameters) for up to 200 epochs with early stopping.
-- **DMGI training** -- ~26 min for 717 epochs on the full graph (899 nodes, 4 relations). Includes 5-seed multi-run evaluation with LogReg and fine-tuned MLP.
+- **DMGI training** -- ~25 min for 619 epochs on the full graph (922 nodes, 4 relations). Includes 5-seed multi-run evaluation with LogReg and fine-tuned MLP.
 
 ### Disk space
 

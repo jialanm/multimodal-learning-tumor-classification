@@ -1,0 +1,357 @@
+======================================================================
+EXPERIMENT SUMMARY -- DMGI (Reference-Aligned)
+======================================================================
+
+--- MODEL ARCHITECTURE ---
+Node features:     Swin(768-d) + Clinical(31-d) = 799-d
+Feature norm:      Row-wise L1 (each row sums to 1)
+Graph relations:   4 types
+Graph encoding:    pd.get_dummies + minmax_scale + cosine_similarity
+  - receptor_staging: 5 columns
+  - demographics_progression: 6 columns
+  - treatment: 9 columns
+  - anatomical: 5 columns
+GCN:               1 layer per relation, hid_dim=128
+Discriminator:     Shared bilinear
+Attention:         Per-node, per-relation (reference Attention module)
+Consensus:         Learnable H parameter (1, 922, 128)
+H init:            xavier_normal_
+Consensus loss:    .sum() (reference-aligned)
+Early stopping:    total loss (reference-aligned)
+Evaluation:        LogReg on frozen H (50 runs x 50 epochs)
+
+--- BEST HYPERPARAMETERS (from search) ---
+  lr:              0.0005
+  weight_decay:    0.0001
+  reg_coef (alpha):0.001
+  sup_coef (beta): 0.1
+  self_connection: 3.0
+  drop_prob:       0.5
+  thresholds:      [0.8, 0.8, 0.8, 0.8]
+
+--- MEAN ATTENTION WEIGHTS ---
+  receptor_staging: 0.2389
+  demographics_progression: 0.2608
+  treatment: 0.1605
+  anatomical: 0.3399
+
+--- ADJACENCY STATS ---
+  receptor_staging: theta=0.8, 47302 edges, density=0.111
+  demographics_progression: theta=0.8, 122995 edges, density=0.290
+  treatment: theta=0.8, 133317 edges, density=0.314
+  anatomical: theta=0.8, 81888 edges, density=0.193
+
+--- DATA ---
+Total patients:   922
+Grade distribution: G1=180, G2=459, G3=283
+Train / Val / Test: 552 / 93 / 277
+
+--- TRAINING ---
+Stopped at epoch: 619
+Best train loss:  -1419654.1250
+
+--- TEST RESULTS (LogReg on frozen H) ---
+Macro-F1:  0.3972 (+/- 0.0325)
+Micro-F1:  0.5176 (+/- 0.0063)
+Accuracy:  0.5176 (+/- 0.0063)
+Max Macro-F1: 0.5258
+Max Micro-F1: 0.5307
+
+Multi-seed test Macro-F1: 0.3572 +/- 0.0256
+Multi-seed test Micro-F1: 0.5086 +/- 0.0102
+
+--- Direct classifier (for reference) ---
+Accuracy:          0.4585
+Balanced Accuracy: 0.5008
+Macro AUC:         0.6743
+  Grade 1 F1: 0.4737  AUC: 0.7351
+  Grade 2 F1: 0.4280  AUC: 0.5482
+  Grade 3 F1: 0.4906  AUC: 0.7397
+
+Confusion Matrix (direct classifier):
+                Pred G1  Pred G2  Pred G3
+  Grade 1            36       14        4
+  Grade 2            55       52       31
+  Grade 3             7       39       39
+
+--- PER-PATIENT PREDICTIONS ---
+  Patient                    True     Pred   OK   P(G1)  P(G2)  P(G3)
+  Breast_MRI_175          Grade 3  Grade 3    Y   0.335  0.323  0.341
+  Breast_MRI_387          Grade 2  Grade 2    Y   0.310  0.357  0.333
+  Breast_MRI_097          Grade 3  Grade 3    Y   0.323  0.336  0.341
+  Breast_MRI_398          Grade 3  Grade 3    Y   0.179  0.245  0.575
+  Breast_MRI_532          Grade 2  Grade 1    N   0.390  0.374  0.235
+  Breast_MRI_707          Grade 1  Grade 1    Y   0.358  0.317  0.326
+  Breast_MRI_295          Grade 3  Grade 2    N   0.321  0.359  0.320
+  Breast_MRI_134          Grade 3  Grade 2    N   0.307  0.357  0.336
+  Breast_MRI_583          Grade 1  Grade 2    N   0.325  0.362  0.313
+  Breast_MRI_011          Grade 3  Grade 2    N   0.305  0.353  0.342
+  Breast_MRI_043          Grade 2  Grade 3    N   0.286  0.329  0.386
+  Breast_MRI_516          Grade 1  Grade 2    N   0.313  0.361  0.326
+  Breast_MRI_818          Grade 1  Grade 1    Y   0.391  0.351  0.258
+  Breast_MRI_166          Grade 3  Grade 3    Y   0.331  0.302  0.367
+  Breast_MRI_259          Grade 2  Grade 3    N   0.324  0.337  0.339
+  Breast_MRI_815          Grade 2  Grade 1    N   0.404  0.349  0.248
+  Breast_MRI_229          Grade 2  Grade 2    Y   0.319  0.353  0.328
+  Breast_MRI_591          Grade 3  Grade 2    N   0.308  0.368  0.324
+  Breast_MRI_276          Grade 2  Grade 1    N   0.417  0.364  0.219
+  Breast_MRI_743          Grade 2  Grade 1    N   0.343  0.316  0.340
+  Breast_MRI_916          Grade 3  Grade 1    N   0.469  0.344  0.187
+  Breast_MRI_586          Grade 2  Grade 3    N   0.322  0.336  0.342
+  Breast_MRI_750          Grade 2  Grade 1    N   0.427  0.370  0.203
+  Breast_MRI_477          Grade 1  Grade 3    N   0.321  0.323  0.355
+  Breast_MRI_292          Grade 2  Grade 1    N   0.473  0.349  0.179
+  Breast_MRI_073          Grade 1  Grade 3    N   0.312  0.338  0.350
+  Breast_MRI_424          Grade 3  Grade 1    N   0.357  0.342  0.301
+  Breast_MRI_783          Grade 2  Grade 1    N   0.336  0.334  0.330
+  Breast_MRI_485          Grade 3  Grade 3    Y   0.137  0.193  0.670
+  Breast_MRI_488          Grade 3  Grade 3    Y   0.115  0.166  0.719
+  Breast_MRI_169          Grade 2  Grade 2    Y   0.322  0.365  0.313
+  Breast_MRI_102          Grade 1  Grade 1    Y   0.456  0.350  0.194
+  Breast_MRI_880          Grade 1  Grade 1    Y   0.480  0.351  0.169
+  Breast_MRI_103          Grade 2  Grade 3    N   0.306  0.336  0.357
+  Breast_MRI_647          Grade 2  Grade 1    N   0.420  0.363  0.217
+  Breast_MRI_914          Grade 3  Grade 3    Y   0.187  0.251  0.562
+  Breast_MRI_279          Grade 1  Grade 1    Y   0.473  0.351  0.177
+  Breast_MRI_630          Grade 2  Grade 1    N   0.425  0.371  0.204
+  Breast_MRI_740          Grade 2  Grade 1    N   0.451  0.352  0.197
+  Breast_MRI_856          Grade 2  Grade 1    N   0.392  0.336  0.272
+  Breast_MRI_733          Grade 2  Grade 1    N   0.369  0.308  0.324
+  Breast_MRI_552          Grade 2  Grade 2    Y   0.316  0.346  0.339
+  Breast_MRI_615          Grade 3  Grade 2    N   0.330  0.342  0.328
+  Breast_MRI_500          Grade 2  Grade 3    N   0.315  0.341  0.344
+  Breast_MRI_848          Grade 2  Grade 1    N   0.423  0.375  0.202
+  Breast_MRI_884          Grade 2  Grade 3    N   0.102  0.150  0.748
+  Breast_MRI_915          Grade 3  Grade 2    N   0.326  0.341  0.334
+  Breast_MRI_533          Grade 3  Grade 1    N   0.448  0.347  0.205
+  Breast_MRI_451          Grade 2  Grade 2    Y   0.315  0.356  0.329
+  Breast_MRI_243          Grade 2  Grade 2    Y   0.326  0.350  0.324
+  Breast_MRI_610          Grade 2  Grade 2    Y   0.316  0.347  0.337
+  Breast_MRI_118          Grade 1  Grade 1    Y   0.357  0.322  0.321
+  Breast_MRI_412          Grade 2  Grade 1    N   0.362  0.307  0.331
+  Breast_MRI_540          Grade 1  Grade 1    Y   0.392  0.352  0.256
+  Breast_MRI_215          Grade 1  Grade 1    Y   0.367  0.304  0.329
+  Breast_MRI_529          Grade 2  Grade 2    Y   0.313  0.345  0.342
+  Breast_MRI_309          Grade 2  Grade 2    Y   0.326  0.347  0.327
+  Breast_MRI_534          Grade 2  Grade 2    Y   0.324  0.342  0.335
+  Breast_MRI_338          Grade 3  Grade 1    N   0.411  0.358  0.231
+  Breast_MRI_407          Grade 2  Grade 1    N   0.355  0.335  0.309
+  Breast_MRI_875          Grade 2  Grade 2    Y   0.321  0.354  0.325
+  Breast_MRI_335          Grade 2  Grade 2    Y   0.313  0.357  0.330
+  Breast_MRI_107          Grade 3  Grade 2    N   0.294  0.361  0.345
+  Breast_MRI_456          Grade 3  Grade 2    N   0.288  0.365  0.347
+  Breast_MRI_850          Grade 3  Grade 3    Y   0.118  0.176  0.706
+  Breast_MRI_895          Grade 2  Grade 1    N   0.481  0.350  0.169
+  Breast_MRI_574          Grade 2  Grade 2    Y   0.307  0.350  0.343
+  Breast_MRI_121          Grade 1  Grade 1    Y   0.456  0.348  0.195
+  Breast_MRI_353          Grade 2  Grade 2    Y   0.315  0.346  0.338
+  Breast_MRI_523          Grade 2  Grade 3    N   0.329  0.327  0.345
+  Breast_MRI_726          Grade 3  Grade 3    Y   0.114  0.166  0.720
+  Breast_MRI_482          Grade 3  Grade 3    Y   0.121  0.193  0.686
+  Breast_MRI_209          Grade 2  Grade 3    N   0.129  0.184  0.688
+  Breast_MRI_129          Grade 3  Grade 3    Y   0.317  0.341  0.342
+  Breast_MRI_537          Grade 1  Grade 1    Y   0.421  0.348  0.231
+  Breast_MRI_821          Grade 2  Grade 2    Y   0.353  0.359  0.289
+  Breast_MRI_260          Grade 2  Grade 2    Y   0.341  0.347  0.312
+  Breast_MRI_632          Grade 2  Grade 1    N   0.337  0.336  0.327
+  Breast_MRI_773          Grade 2  Grade 3    N   0.306  0.340  0.354
+  Breast_MRI_422          Grade 3  Grade 3    Y   0.317  0.318  0.365
+  Breast_MRI_556          Grade 1  Grade 1    Y   0.420  0.347  0.233
+  Breast_MRI_155          Grade 2  Grade 3    N   0.346  0.307  0.347
+  Breast_MRI_658          Grade 2  Grade 2    Y   0.320  0.357  0.323
+  Breast_MRI_795          Grade 1  Grade 1    Y   0.384  0.353  0.263
+  Breast_MRI_376          Grade 2  Grade 1    N   0.436  0.356  0.208
+  Breast_MRI_036          Grade 3  Grade 2    N   0.320  0.345  0.336
+  Breast_MRI_082          Grade 3  Grade 2    N   0.320  0.351  0.329
+  Breast_MRI_772          Grade 2  Grade 2    Y   0.303  0.351  0.346
+  Breast_MRI_739          Grade 2  Grade 3    N   0.306  0.291  0.403
+  Breast_MRI_893          Grade 3  Grade 3    Y   0.115  0.166  0.719
+  Breast_MRI_759          Grade 2  Grade 1    N   0.477  0.350  0.172
+  Breast_MRI_023          Grade 3  Grade 2    N   0.317  0.364  0.319
+  Breast_MRI_411          Grade 2  Grade 1    N   0.356  0.319  0.326
+  Breast_MRI_392          Grade 2  Grade 3    N   0.309  0.341  0.350
+  Breast_MRI_698          Grade 2  Grade 2    Y   0.295  0.371  0.333
+  Breast_MRI_535          Grade 3  Grade 2    N   0.300  0.354  0.346
+  Breast_MRI_314          Grade 3  Grade 3    Y   0.139  0.195  0.666
+  Breast_MRI_050          Grade 1  Grade 2    N   0.310  0.354  0.336
+  Breast_MRI_199          Grade 2  Grade 1    N   0.475  0.345  0.180
+  Breast_MRI_473          Grade 3  Grade 2    N   0.331  0.345  0.324
+  Breast_MRI_428          Grade 3  Grade 2    N   0.314  0.348  0.338
+  Breast_MRI_885          Grade 2  Grade 1    N   0.371  0.320  0.308
+  Breast_MRI_838          Grade 3  Grade 3    Y   0.292  0.325  0.383
+  Breast_MRI_746          Grade 3  Grade 2    N   0.310  0.356  0.333
+  Breast_MRI_922          Grade 1  Grade 1    Y   0.458  0.348  0.194
+  Breast_MRI_299          Grade 1  Grade 1    Y   0.477  0.352  0.171
+  Breast_MRI_844          Grade 1  Grade 1    Y   0.471  0.348  0.180
+  Breast_MRI_401          Grade 3  Grade 3    Y   0.321  0.339  0.340
+  Breast_MRI_656          Grade 2  Grade 3    N   0.112  0.167  0.721
+  Breast_MRI_228          Grade 2  Grade 2    Y   0.294  0.369  0.337
+  Breast_MRI_328          Grade 3  Grade 2    N   0.319  0.342  0.339
+  Breast_MRI_701          Grade 2  Grade 1    N   0.426  0.369  0.205
+  Breast_MRI_899          Grade 2  Grade 1    N   0.473  0.347  0.180
+  Breast_MRI_433          Grade 2  Grade 1    N   0.366  0.355  0.280
+  Breast_MRI_747          Grade 2  Grade 2    Y   0.321  0.359  0.320
+  Breast_MRI_255          Grade 3  Grade 2    N   0.316  0.346  0.337
+  Breast_MRI_468          Grade 3  Grade 3    Y   0.295  0.352  0.353
+  Breast_MRI_788          Grade 1  Grade 3    N   0.145  0.205  0.650
+  Breast_MRI_465          Grade 3  Grade 2    N   0.339  0.339  0.321
+  Breast_MRI_416          Grade 2  Grade 2    Y   0.314  0.346  0.340
+  Breast_MRI_633          Grade 3  Grade 1    N   0.427  0.348  0.225
+  Breast_MRI_820          Grade 3  Grade 2    N   0.331  0.338  0.332
+  Breast_MRI_617          Grade 1  Grade 1    Y   0.456  0.350  0.195
+  Breast_MRI_657          Grade 2  Grade 1    N   0.378  0.360  0.263
+  Breast_MRI_604          Grade 2  Grade 2    Y   0.298  0.363  0.339
+  Breast_MRI_193          Grade 1  Grade 1    Y   0.474  0.354  0.173
+  Breast_MRI_141          Grade 2  Grade 2    Y   0.324  0.343  0.334
+  Breast_MRI_239          Grade 3  Grade 2    N   0.317  0.347  0.336
+  Breast_MRI_640          Grade 2  Grade 1    N   0.483  0.347  0.170
+  Breast_MRI_305          Grade 2  Grade 1    N   0.360  0.316  0.323
+  Breast_MRI_775          Grade 2  Grade 2    Y   0.303  0.364  0.332
+  Breast_MRI_825          Grade 1  Grade 1    Y   0.375  0.347  0.279
+  Breast_MRI_492          Grade 1  Grade 1    Y   0.478  0.351  0.171
+  Breast_MRI_270          Grade 2  Grade 1    N   0.411  0.366  0.223
+  Breast_MRI_602          Grade 3  Grade 3    Y   0.321  0.321  0.358
+  Breast_MRI_720          Grade 2  Grade 1    N   0.482  0.350  0.168
+  Breast_MRI_241          Grade 3  Grade 3    Y   0.316  0.336  0.348
+  Breast_MRI_578          Grade 2  Grade 2    Y   0.319  0.350  0.331
+  Breast_MRI_837          Grade 1  Grade 1    Y   0.471  0.353  0.176
+  Breast_MRI_437          Grade 3  Grade 3    Y   0.302  0.336  0.362
+  Breast_MRI_564          Grade 1  Grade 1    Y   0.422  0.348  0.230
+  Breast_MRI_291          Grade 1  Grade 1    Y   0.392  0.338  0.270
+  Breast_MRI_068          Grade 2  Grade 2    Y   0.339  0.351  0.310
+  Breast_MRI_625          Grade 3  Grade 3    Y   0.307  0.345  0.348
+  Breast_MRI_712          Grade 2  Grade 3    N   0.340  0.316  0.344
+  Breast_MRI_634          Grade 3  Grade 3    Y   0.321  0.318  0.360
+  Breast_MRI_432          Grade 1  Grade 2    N   0.324  0.353  0.322
+  Breast_MRI_705          Grade 2  Grade 1    N   0.402  0.346  0.252
+  Breast_MRI_667          Grade 3  Grade 3    Y   0.320  0.328  0.352
+  Breast_MRI_490          Grade 1  Grade 1    Y   0.437  0.348  0.215
+  Breast_MRI_907          Grade 2  Grade 2    Y   0.306  0.354  0.340
+  Breast_MRI_077          Grade 2  Grade 3    N   0.111  0.159  0.730
+  Breast_MRI_648          Grade 1  Grade 1    Y   0.480  0.339  0.182
+  Breast_MRI_861          Grade 1  Grade 2    N   0.320  0.341  0.339
+  Breast_MRI_806          Grade 3  Grade 3    Y   0.136  0.193  0.671
+  Breast_MRI_308          Grade 2  Grade 3    N   0.318  0.326  0.356
+  Breast_MRI_751          Grade 2  Grade 2    Y   0.321  0.344  0.335
+  Breast_MRI_341          Grade 1  Grade 1    Y   0.421  0.349  0.230
+  Breast_MRI_334          Grade 3  Grade 3    Y   0.129  0.190  0.682
+  Breast_MRI_686          Grade 2  Grade 1    N   0.374  0.349  0.277
+  Breast_MRI_548          Grade 2  Grade 2    Y   0.318  0.349  0.334
+  Breast_MRI_896          Grade 1  Grade 2    N   0.327  0.346  0.327
+  Breast_MRI_558          Grade 2  Grade 3    N   0.317  0.330  0.353
+  Breast_MRI_340          Grade 2  Grade 2    Y   0.308  0.346  0.346
+  Breast_MRI_921          Grade 2  Grade 3    N   0.320  0.337  0.343
+  Breast_MRI_890          Grade 2  Grade 1    N   0.407  0.365  0.227
+  Breast_MRI_682          Grade 2  Grade 3    N   0.319  0.332  0.349
+  Breast_MRI_696          Grade 1  Grade 1    Y   0.425  0.346  0.229
+  Breast_MRI_288          Grade 3  Grade 3    Y   0.138  0.207  0.655
+  Breast_MRI_200          Grade 2  Grade 3    N   0.311  0.341  0.348
+  Breast_MRI_017          Grade 2  Grade 2    Y   0.303  0.349  0.348
+  Breast_MRI_047          Grade 1  Grade 2    N   0.292  0.361  0.347
+  Breast_MRI_894          Grade 2  Grade 3    N   0.332  0.317  0.351
+  Breast_MRI_904          Grade 1  Grade 1    Y   0.423  0.348  0.228
+  Breast_MRI_217          Grade 3  Grade 2    N   0.306  0.351  0.343
+  Breast_MRI_046          Grade 3  Grade 2    N   0.324  0.340  0.336
+  Breast_MRI_028          Grade 3  Grade 3    Y   0.324  0.315  0.360
+  Breast_MRI_823          Grade 2  Grade 1    N   0.352  0.314  0.334
+  Breast_MRI_247          Grade 2  Grade 3    N   0.323  0.321  0.356
+  Breast_MRI_691          Grade 1  Grade 1    Y   0.362  0.307  0.332
+  Breast_MRI_796          Grade 2  Grade 1    N   0.415  0.353  0.231
+  Breast_MRI_198          Grade 2  Grade 3    N   0.323  0.333  0.344
+  Breast_MRI_158          Grade 3  Grade 2    N   0.321  0.353  0.326
+  Breast_MRI_799          Grade 2  Grade 1    N   0.481  0.349  0.170
+  Breast_MRI_560          Grade 2  Grade 1    N   0.360  0.305  0.335
+  Breast_MRI_459          Grade 2  Grade 3    N   0.320  0.316  0.364
+  Breast_MRI_472          Grade 1  Grade 1    Y   0.371  0.303  0.326
+  Breast_MRI_204          Grade 2  Grade 1    N   0.471  0.348  0.181
+  Breast_MRI_803          Grade 1  Grade 1    Y   0.353  0.313  0.334
+  Breast_MRI_389          Grade 1  Grade 2    N   0.321  0.345  0.334
+  Breast_MRI_081          Grade 2  Grade 1    N   0.390  0.386  0.224
+  Breast_MRI_089          Grade 3  Grade 3    Y   0.308  0.332  0.359
+  Breast_MRI_183          Grade 3  Grade 3    Y   0.281  0.331  0.388
+  Breast_MRI_728          Grade 2  Grade 1    N   0.471  0.343  0.186
+  Breast_MRI_463          Grade 3  Grade 2    N   0.300  0.365  0.335
+  Breast_MRI_600          Grade 2  Grade 1    N   0.386  0.342  0.272
+  Breast_MRI_419          Grade 2  Grade 1    N   0.372  0.317  0.311
+  Breast_MRI_687          Grade 3  Grade 2    N   0.297  0.357  0.346
+  Breast_MRI_616          Grade 3  Grade 2    N   0.321  0.347  0.333
+  Breast_MRI_763          Grade 3  Grade 2    N   0.315  0.349  0.335
+  Breast_MRI_731          Grade 2  Grade 2    Y   0.324  0.347  0.329
+  Breast_MRI_792          Grade 2  Grade 3    N   0.320  0.332  0.348
+  Breast_MRI_246          Grade 2  Grade 2    Y   0.339  0.352  0.309
+  Breast_MRI_035          Grade 3  Grade 1    N   0.482  0.348  0.170
+  Breast_MRI_365          Grade 1  Grade 1    Y   0.425  0.346  0.229
+  Breast_MRI_007          Grade 1  Grade 1    Y   0.356  0.318  0.326
+  Breast_MRI_320          Grade 2  Grade 2    Y   0.321  0.364  0.315
+  Breast_MRI_329          Grade 2  Grade 3    N   0.105  0.154  0.741
+  Breast_MRI_449          Grade 2  Grade 2    Y   0.309  0.358  0.332
+  Breast_MRI_368          Grade 2  Grade 3    N   0.322  0.334  0.344
+  Breast_MRI_730          Grade 2  Grade 2    Y   0.306  0.354  0.340
+  Breast_MRI_187          Grade 3  Grade 3    Y   0.320  0.331  0.350
+  Breast_MRI_350          Grade 3  Grade 3    Y   0.303  0.335  0.362
+  Breast_MRI_612          Grade 3  Grade 2    N   0.299  0.368  0.333
+  Breast_MRI_594          Grade 2  Grade 2    Y   0.332  0.336  0.332
+  Breast_MRI_462          Grade 2  Grade 1    N   0.482  0.350  0.168
+  Breast_MRI_794          Grade 2  Grade 2    Y   0.337  0.340  0.323
+  Breast_MRI_233          Grade 2  Grade 3    N   0.115  0.166  0.720
+  Breast_MRI_359          Grade 2  Grade 3    N   0.315  0.341  0.345
+  Breast_MRI_002          Grade 3  Grade 3    Y   0.108  0.156  0.736
+  Breast_MRI_910          Grade 2  Grade 1    N   0.398  0.373  0.229
+  Breast_MRI_623          Grade 2  Grade 2    Y   0.311  0.355  0.334
+  Breast_MRI_404          Grade 1  Grade 2    N   0.330  0.364  0.305
+  Breast_MRI_201          Grade 2  Grade 1    N   0.469  0.349  0.182
+  Breast_MRI_038          Grade 3  Grade 3    Y   0.310  0.342  0.349
+  Breast_MRI_413          Grade 1  Grade 1    Y   0.425  0.349  0.226
+  Breast_MRI_348          Grade 1  Grade 2    N   0.336  0.348  0.316
+  Breast_MRI_331          Grade 3  Grade 2    N   0.317  0.345  0.338
+  Breast_MRI_078          Grade 3  Grade 3    Y   0.323  0.335  0.342
+  Breast_MRI_268          Grade 3  Grade 2    N   0.314  0.354  0.332
+  Breast_MRI_072          Grade 1  Grade 1    Y   0.458  0.347  0.195
+  Breast_MRI_664          Grade 3  Grade 2    N   0.313  0.349  0.339
+  Breast_MRI_402          Grade 2  Grade 1    N   0.452  0.349  0.198
+  Breast_MRI_160          Grade 3  Grade 3    Y   0.307  0.337  0.355
+  Breast_MRI_421          Grade 1  Grade 1    Y   0.428  0.371  0.201
+  Breast_MRI_857          Grade 2  Grade 1    N   0.351  0.323  0.326
+  Breast_MRI_471          Grade 2  Grade 1    N   0.480  0.348  0.172
+  Breast_MRI_877          Grade 2  Grade 2    Y   0.329  0.338  0.333
+  Breast_MRI_787          Grade 1  Grade 1    Y   0.480  0.350  0.170
+  Breast_MRI_105          Grade 2  Grade 2    Y   0.333  0.334  0.333
+  Breast_MRI_057          Grade 3  Grade 2    N   0.326  0.350  0.324
+  Breast_MRI_117          Grade 2  Grade 3    N   0.118  0.187  0.695
+  Breast_MRI_252          Grade 2  Grade 2    Y   0.319  0.344  0.337
+  Breast_MRI_506          Grade 2  Grade 2    Y   0.317  0.356  0.327
+  Breast_MRI_142          Grade 3  Grade 2    N   0.326  0.347  0.328
+  Breast_MRI_304          Grade 1  Grade 2    N   0.321  0.346  0.333
+  Breast_MRI_337          Grade 1  Grade 2    N   0.306  0.364  0.330
+  Breast_MRI_470          Grade 3  Grade 2    N   0.310  0.351  0.339
+  Breast_MRI_715          Grade 3  Grade 2    N   0.325  0.338  0.337
+  Breast_MRI_479          Grade 2  Grade 1    N   0.482  0.349  0.169
+  Breast_MRI_438          Grade 3  Grade 2    N   0.294  0.360  0.346
+  Breast_MRI_562          Grade 3  Grade 3    Y   0.321  0.332  0.347
+  Breast_MRI_886          Grade 2  Grade 2    Y   0.307  0.367  0.326
+  Breast_MRI_446          Grade 1  Grade 2    N   0.324  0.341  0.335
+  Breast_MRI_333          Grade 2  Grade 1    N   0.417  0.327  0.255
+  Breast_MRI_109          Grade 2  Grade 2    Y   0.324  0.365  0.310
+  Breast_MRI_917          Grade 2  Grade 3    N   0.311  0.335  0.354
+  Breast_MRI_319          Grade 2  Grade 1    N   0.410  0.365  0.226
+  Breast_MRI_892          Grade 2  Grade 1    N   0.422  0.347  0.230
+  Breast_MRI_104          Grade 2  Grade 1    N   0.364  0.310  0.326
+  Breast_MRI_469          Grade 1  Grade 2    N   0.339  0.344  0.317
+  Breast_MRI_003          Grade 2  Grade 2    Y   0.323  0.372  0.305
+  Breast_MRI_729          Grade 3  Grade 2    N   0.331  0.341  0.328
+  Breast_MRI_079          Grade 2  Grade 1    N   0.421  0.375  0.204
+  Breast_MRI_920          Grade 2  Grade 1    N   0.408  0.348  0.244
+  Breast_MRI_269          Grade 2  Grade 2    Y   0.319  0.343  0.338
+  Breast_MRI_808          Grade 2  Grade 2    Y   0.323  0.340  0.337
+  Breast_MRI_139          Grade 3  Grade 3    Y   0.125  0.183  0.693
+  Breast_MRI_724          Grade 3  Grade 3    Y   0.284  0.340  0.377
+  Breast_MRI_266          Grade 3  Grade 2    N   0.328  0.352  0.320
+  Breast_MRI_512          Grade 3  Grade 3    Y   0.309  0.342  0.350
+  Breast_MRI_584          Grade 3  Grade 1    N   0.453  0.369  0.179
+  Breast_MRI_553          Grade 2  Grade 2    Y   0.334  0.358  0.308
+  Breast_MRI_484          Grade 2  Grade 2    Y   0.318  0.348  0.334
+  Breast_MRI_318          Grade 2  Grade 2    Y   0.304  0.360  0.335
+  Breast_MRI_435          Grade 3  Grade 2    N   0.328  0.363  0.309
+  Breast_MRI_692          Grade 1  Grade 3    N   0.318  0.335  0.347
+
+Runtime: 1485.0s
