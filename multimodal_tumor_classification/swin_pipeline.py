@@ -234,8 +234,9 @@ def cross_validate(img_feats, clin_feats, labels, hparams, device, num_epochs):
 def train_final_with_history(img_tr, clin_tr, y_tr, img_val, clin_val, y_val,
                              hparams, device, num_epochs, patience=SWIN_PATIENCE):
     """
-    Train final model recording loss history.
-    Returns: (model, preds, probs, train_losses, val_losses, stopped_epoch)
+    Train the final model, early-stopping on the validation arrays, and record
+    the loss history. Prediction is done separately (see predict()).
+    Returns: (model, train_losses, val_losses, stopped_epoch)
     """
     torch.manual_seed(RANDOM_SEED)
 
@@ -302,16 +303,18 @@ def train_final_with_history(img_tr, clin_tr, y_tr, img_val, clin_val, y_val,
     if best_state is not None:
         model.load_state_dict(best_state)
 
-    model.eval()
-    all_logits = []
-    with torch.no_grad():
-        for img_b, clin_b, _ in val_loader:
-            all_logits.append(model(img_b.to(device), clin_b.to(device)))
-    logits_cat = torch.cat(all_logits)
-    probs = torch.softmax(logits_cat, dim=1).cpu().numpy()
-    preds = logits_cat.argmax(dim=1).cpu().numpy()
+    return model, train_losses, val_losses, stopped_epoch
 
-    return model, preds, probs, train_losses, val_losses, stopped_epoch
+
+def predict(model, img, clin, device):
+    """Return (preds, probs) for feature arrays with a trained model in eval mode."""
+    model.eval()
+    with torch.no_grad():
+        logits = model(torch.tensor(img, dtype=torch.float32).to(device),
+                       torch.tensor(clin, dtype=torch.float32).to(device))
+    probs = torch.softmax(logits, dim=1).cpu().numpy()
+    preds = logits.argmax(dim=1).cpu().numpy()
+    return preds, probs
 
 
 # =============================================================================
@@ -366,7 +369,7 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
 
     # Phase 3: Split
     print("\n" + "=" * 60)
-    print("PHASE 3: 80/20 stratified split")
+    print("PHASE 3: 80/20 stratified split (val held out of the train pool)")
     print("=" * 60)
     indices = np.arange(len(patient_ids))
     train_idx, test_idx = train_test_split(
@@ -379,8 +382,19 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
     clin_train, scaler = encode_clinical_features(train_df, fit_scaler=True)
     clin_test, _ = encode_clinical_features(test_df, scaler=scaler, fit_scaler=False)
 
-    print(f"Train: {len(train_idx)}  Test: {len(test_idx)}")
-    print(f"Train grades: {dict(Counter(y_train.tolist()))}")
+    # Hold a validation slice (1/8 of the pool) out of the train pool for early
+    # stopping of the final model. Grid-search CV below still uses the full pool.
+    pool_pos = np.arange(len(train_idx))
+    fit_pos, val_pos = train_test_split(
+        pool_pos, test_size=1.0/8.0, stratify=y_train, random_state=RANDOM_SEED)
+    img_fit, clin_fit, y_fit = img_train[fit_pos], clin_train[fit_pos], y_train[fit_pos]
+    img_val, clin_val, y_val = img_train[val_pos], clin_train[val_pos], y_train[val_pos]
+    fit_idx, val_idx = train_idx[fit_pos], train_idx[val_pos]
+
+    print(f"Train pool: {len(train_idx)}  (final fit: {len(fit_idx)}, val: {len(val_idx)})  "
+          f"Test: {len(test_idx)}")
+    print(f"Train grades: {dict(Counter(y_fit.tolist()))}")
+    print(f"Val grades:   {dict(Counter(y_val.tolist()))}")
     print(f"Test grades:  {dict(Counter(y_test.tolist()))}")
     print(f"Clinical dim: {clin_train.shape[1]}  Image dim: {img_train.shape[1]}")
 
@@ -427,10 +441,11 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
     print("PHASE 5: Train final model & evaluate on test set")
     print("=" * 60)
 
-    final_model, test_preds, test_probs, train_losses, val_losses, stopped_epoch = \
-        train_final_with_history(img_train, clin_train, y_train,
-                                 img_test, clin_test, y_test,
+    final_model, train_losses, val_losses, stopped_epoch = \
+        train_final_with_history(img_fit, clin_fit, y_fit,
+                                 img_val, clin_val, y_val,
                                  best_params, device_mlp, num_epochs)
+    test_preds, test_probs = predict(final_model, img_test, clin_test, device_mlp)
 
     print("\nClassification Report:")
     print(classification_report(y_test, test_preds, target_names=LABEL_NAMES, zero_division=0))
@@ -480,8 +495,8 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
 
     save_summary_txt(
         os.path.join(output_dir, "experiment_summary.txt"),
-        patient_ids, labels, train_idx, test_idx,
-        y_train, y_test, clin_train, img_feats,
+        patient_ids, labels, fit_idx, test_idx,
+        y_fit, y_test, clin_fit, img_feats,
         best_params, search_results, test_preds, test_probs,
         macro_f1, bal_acc, acc, cm, per_class_aucs, macro_auc,
         train_losses, val_losses, elapsed, stopped_epoch,
@@ -491,7 +506,10 @@ def run_swin_pipeline(output_dir: Optional[str] = None, composites_dir: Optional
         "config": {
             "model": "Swin-Tiny (frozen) + clinical MLP",
             "num_patients": len(patient_ids),
-            "train_size": int(len(train_idx)),
+            "split": "80/20",
+            "train_pool_size": int(len(train_idx)),
+            "train_size": int(len(fit_idx)),
+            "val_size": int(len(val_idx)),
             "test_size": int(len(test_idx)),
             "clinical_dim": int(clin_train.shape[1]),
             "swin_dim": int(img_feats.shape[1]),

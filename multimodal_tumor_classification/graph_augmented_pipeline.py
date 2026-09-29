@@ -501,9 +501,10 @@ def run_graph_augmented_pipeline(output_dir: Optional[str] = None,
     Phase 7: Plots + save results.json
 
     Args:
-        split: "60-10-30" (matching DMGI) or "80-20" (matching Swin).
-               With 80-20, CV is on the 80% train pool and the final model
-               early-stops on the 20% test set (matching Swin protocol).
+        split: "60-10-30" (matching DMGI), "70-10-20", or "80-20" (test set
+               matching Swin). In every mode the early-stopping validation set
+               is carved out of the train pool and is disjoint from the test
+               set; CV for hyperparameters runs on the full train pool.
         mode: "full-batch" (original) or "hybrid" (mini-batch CE + graph smoothness).
     """
     np.random.seed(RANDOM_SEED)
@@ -594,13 +595,16 @@ def run_graph_augmented_pipeline(output_dir: Optional[str] = None,
     if split == "80-20":
         split_label = "80/20"
         print("\n" + "=" * 60)
-        print("PHASE 3: 80/20 stratified split (matching Swin)")
+        print("PHASE 3: 80/20 stratified split (test set matching Swin)")
         print("=" * 60)
         trainval_idx, test_idx = train_test_split(
             indices, test_size=0.2, stratify=labels, random_state=RANDOM_SEED)
-        # No separate val — final model early-stops on test (matching Swin)
-        train_idx = trainval_idx
-        val_idx = test_idx
+        # Early-stopping val is held out of the train pool (1/8 of it), never
+        # taken from the test set. CV still uses the full trainval pool.
+        y_trainval = labels[trainval_idx]
+        train_idx, val_idx = train_test_split(
+            trainval_idx, test_size=1.0/8.0, stratify=y_trainval,
+            random_state=RANDOM_SEED)
     elif split == "70-10-20":
         split_label = "70/10/20"
         print("\n" + "=" * 60)
@@ -630,8 +634,7 @@ def run_graph_augmented_pipeline(output_dir: Optional[str] = None,
 
     print(f"Train: {len(train_idx)}  Val: {len(val_idx)}  Test: {len(test_idx)}")
     print(f"Train grades: {dict(Counter(y_train.tolist()))}")
-    if split not in ("80-20",):
-        print(f"Val grades:   {dict(Counter(y_val.tolist()))}")
+    print(f"Val grades:   {dict(Counter(y_val.tolist()))}")
     print(f"Test grades:  {dict(Counter(y_test.tolist()))}")
 
     # Clinical features (31-d) — fit scaler on train pool, apply to all
