@@ -119,3 +119,66 @@ NUMERICAL_FEATURES = [
 SWIN_NUM_EPOCHS = 200
 SWIN_NUM_CV_FOLDS = 5
 SWIN_PATIENCE = 20
+
+# =============================================================================
+# DMGI TRAINING DEFAULTS (Duke-Breast hyperparameters from AAAI 2023 paper)
+# =============================================================================
+DMGI_NUM_EPOCHS = 2000
+DMGI_PATIENCE = 100
+DMGI_NUM_CV_FOLDS = 5
+
+# Feature type groups for multiplex graph construction (indices into 31-d encoded clinical array)
+DMGI_FEATURE_TYPE_GROUPS = {
+    "receptor_staging":         [30, 23, 24, 25, 0, 1, 29],
+    "demographics_progression": [20, 21, 22, 12, 9, 4, 17, 16],
+    "treatment":                [2, 26, 27, 28, 15, 8, 3, 10, 11, 18, 19],
+    "anatomical":               [6, 7, 5, 13, 14],
+}
+
+# Column-name-based feature groups for reference-style graph construction
+# (used with pd.get_dummies + minmax_scale before cosine similarity)
+DMGI_FEATURE_TYPE_GROUPS_COLS = {
+    "receptor_staging": [
+        "Staging(Nodes)#(Nx replaced by -1)[N]",
+        "HER2", "ER", "PR",
+        "Staging(Metastasis)#(Mx -replaced by -1)[M]",
+    ],
+    "demographics_progression": [
+        "Menopause (at diagnosis)",
+        "Metastatic at Presentation (Outside of Lymph Nodes)",
+        "Adjuvant Chemotherapy",
+        "Adjuvant Endocrine Therapy Medications",
+        "Known Ovarian Status",
+        "Recurrence event(s)",
+    ],
+    "treatment": [
+        "Surgery",
+        "Definitive Surgery Type",
+        "Neoadjuvant Radiation Therapy",
+        "Neoadjuvant Chemotherapy",
+        "Adjuvant Radiation Therapy",
+        "Neoadjuvant Anti-Her2 Neu Therapy",
+        "Adjuvant Anti-Her2 Neu Therapy",
+        "Therapeutic or Prophylactic Oophorectomy as part of Endocrine Therapy",
+        "Neoadjuvant Endocrine Therapy Medications",
+    ],
+    "anatomical": [
+        "Multicentric/Multifocal",
+        "Lymphadenopathy or Suspicious Nodes",
+        "Pec/Chest Involvement",
+        "Contralateral Breast Involvement",
+        "Skin/Nipple Invovlement",
+    ],
+}
+
+# Loss: L = L_MI + reg_coef * L_consensus + sup_coef * L_supervised
+# (MI loss has implicit coefficient 1.0, not tunable)
+DMGI_REG_COEF = 0.001        # paper's α — consensus regularization weight
+DMGI_SUP_COEF = 0.01         # paper's β — supervised classification weight
+# paper's γ (0.0001) = weight_decay, passed to Adam optimizer
+
+DMGI_SELF_CONNECTION = 3.0   # self-loop weight: A_hat = A + sc*I (reference default)
+DMGI_DROP_PROB = 0.5         # GCN input dropout
+
+# Per-relation thresholds (paper's θ for Duke-Breast)
+DMGI_THRESHOLDS = [0.75, 0.9, 0.75, 0.75]

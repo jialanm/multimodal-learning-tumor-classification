@@ -41,6 +41,22 @@ def main():
         "--patient-list", type=str, default=None,
         help="Path to text file with one patient ID per line to filter patients")
 
+    # --- dmgi subcommand ---
+    dmgi_parser = subparsers.add_parser(
+        "dmgi", help="Run DMGI multiplex graph classification")
+    dmgi_parser.add_argument(
+        "--output-dir", type=str, default=None,
+        help="Output directory (default: output/dmgi_baseline)")
+    dmgi_parser.add_argument(
+        "--composites-dir", type=str, default=None,
+        help="Path to composites directory (default: output/ovis2_fixed256_crop/composites)")
+    dmgi_parser.add_argument(
+        "--epochs", type=int, default=None,
+        help="Max training epochs (default: 2000)")
+    dmgi_parser.add_argument(
+        "--patient-list", type=str, default=None,
+        help="Path to text file with one patient ID per line to filter patients")
+
     args = parser.parse_args()
 
     if args.command == "ovis2":
@@ -54,6 +70,15 @@ def main():
     elif args.command == "swin":
         from .swin_pipeline import run_swin_pipeline
         run_swin_pipeline(
+            output_dir=args.output_dir,
+            composites_dir=args.composites_dir,
+            num_epochs=args.epochs,
+            patient_list=args.patient_list,
+        )
+
+    elif args.command == "dmgi":
+        from .dmgi_pipeline import run_dmgi_pipeline
+        run_dmgi_pipeline(
             output_dir=args.output_dir,
             composites_dir=args.composites_dir,
             num_epochs=args.epochs,
