@@ -57,6 +57,27 @@ def main():
         "--patient-list", type=str, default=None,
         help="Path to text file with one patient ID per line to filter patients")
 
+    # --- graph-aug subcommand ---
+    ga_parser = subparsers.add_parser(
+        "graph-aug", help="Run graph-augmented Swin+MLP with smoothness regularization")
+    ga_parser.add_argument(
+        "--output-dir", type=str, default=None,
+        help="Output directory (default: output/graph_augmented)")
+    ga_parser.add_argument(
+        "--composites-dir", type=str, default=None,
+        help="Path to composites directory (default: output/ovis2_fixed256_crop/composites)")
+    ga_parser.add_argument(
+        "--epochs", type=int, default=None,
+        help="Max training epochs (default: 200)")
+    ga_parser.add_argument(
+        "--patient-list", type=str, default=None,
+        help="Path to text file with one patient ID per line to filter patients")
+    ga_parser.add_argument(
+        "--split", choices=["60-10-30", "70-10-20", "80-20"], default="60-10-30",
+        help="Data split strategy (default: 60-10-30)")
+    ga_parser.add_argument(
+        "--mode", choices=["full-batch", "hybrid"], default="hybrid",
+        help="Training mode: full-batch (original) or hybrid (mini-batch CE + graph smoothness, default: hybrid)")
     args = parser.parse_args()
 
     if args.command == "ovis2":
@@ -83,6 +104,17 @@ def main():
             composites_dir=args.composites_dir,
             num_epochs=args.epochs,
             patient_list=args.patient_list,
+        )
+
+    elif args.command == "graph-aug":
+        from .graph_augmented_pipeline import run_graph_augmented_pipeline
+        run_graph_augmented_pipeline(
+            output_dir=args.output_dir,
+            composites_dir=args.composites_dir,
+            num_epochs=args.epochs,
+            patient_list=args.patient_list,
+            split=args.split,
+            mode=args.mode,
         )
 
 

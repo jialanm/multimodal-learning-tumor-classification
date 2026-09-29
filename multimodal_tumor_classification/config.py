@@ -182,3 +182,10 @@ DMGI_DROP_PROB = 0.5         # GCN input dropout
 
 # Per-relation thresholds (paper's θ for Duke-Breast)
 DMGI_THRESHOLDS = [0.75, 0.9, 0.75, 0.75]
+
+# =============================================================================
+# GRAPH-AUGMENTED PIPELINE DEFAULTS
+# =============================================================================
+GRAPH_AUG_NUM_EPOCHS = 200
+GRAPH_AUG_PATIENCE = 30
+GRAPH_AUG_THRESHOLDS = [0.8, 0.8, 0.8, 0.8]
