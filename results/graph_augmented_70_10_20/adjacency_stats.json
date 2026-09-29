@@ -1,0 +1,34 @@
+{
+  "receptor_staging": {
+    "num_features": 5,
+    "num_dummy_cols": 13,
+    "threshold": 0.8,
+    "num_edges": 47302,
+    "density": 0.11140865832567215,
+    "num_isolated": 11
+  },
+  "demographics_progression": {
+    "num_features": 6,
+    "num_dummy_cols": 13,
+    "threshold": 0.8,
+    "num_edges": 122995,
+    "density": 0.28968560695648193,
+    "num_isolated": 0
+  },
+  "treatment": {
+    "num_features": 9,
+    "num_dummy_cols": 19,
+    "threshold": 0.8,
+    "num_edges": 133317,
+    "density": 0.3139966130256653,
+    "num_isolated": 3
+  },
+  "anatomical": {
+    "num_features": 5,
+    "num_dummy_cols": 10,
+    "threshold": 0.8,
+    "num_edges": 81888,
+    "density": 0.19286778569221497,
+    "num_isolated": 6
+  }
+}

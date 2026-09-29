@@ -1,0 +1,1942 @@
+{
+  "config": {
+    "model": "Graph-Augmented Swin+MLP (smoothness regularizer)",
+    "num_patients": 899,
+    "train_size": 719,
+    "val_size": 180,
+    "test_size": 180,
+    "split": "80/20",
+    "clinical_dim": 31,
+    "swin_dim": 768,
+    "num_epochs": 200,
+    "patience": 30,
+    "cv_folds": 5,
+    "graph_construction": "pd.get_dummies + minmax_scale + cosine_similarity",
+    "graph_normalization": "row-normalized D^{-1}A (no self-loops)",
+    "num_relations": 4,
+    "thresholds": [
+      0.8,
+      0.8,
+      0.8,
+      0.8
+    ]
+  },
+  "best_hyperparams": {
+    "lr": 0.001,
+    "class_weight": "balanced",
+    "dropout": 0.7,
+    "hidden_dim": 128,
+    "weight_decay": 0.0001,
+    "proj_dim": 64,
+    "batch_size": 16
+  },
+  "best_lambda": 0.05,
+  "stage1_cv_best_f1": 0.4368845134984851,
+  "stage2_results": [
+    {
+      "lambda": 0.0,
+      "mean_f1": 0.4368845134984851,
+      "std_f1": 0.03270978637028472
+    },
+    {
+      "lambda": 0.001,
+      "mean_f1": 0.4351745961126059,
+      "std_f1": 0.03885654650940217
+    },
+    {
+      "lambda": 0.01,
+      "mean_f1": 0.4602392380600346,
+      "std_f1": 0.039160214648307615
+    },
+    {
+      "lambda": 0.05,
+      "mean_f1": 0.4620594633179828,
+      "std_f1": 0.037541012819030745
+    },
+    {
+      "lambda": 0.1,
+      "mean_f1": 0.45956433574739697,
+      "std_f1": 0.03193152325877462
+    },
+    {
+      "lambda": 0.5,
+      "mean_f1": 0.4421133253213501,
+      "std_f1": 0.02585770706874091
+    },
+    {
+      "lambda": 1.0,
+      "mean_f1": 0.43766362406182246,
+      "std_f1": 0.04047425523310075
+    }
+  ],
+  "early_stopping": {
+    "patience": 30,
+    "stopped_epoch": 96,
+    "best_epoch": 66
+  },
+  "test_metrics": {
+    "macro_f1": 0.47082967178991764,
+    "micro_f1": 0.4722222222222222,
+    "balanced_accuracy": 0.570947570947571,
+    "accuracy": 0.4722222222222222,
+    "macro_auc": 0.7346097936120924,
+    "per_class_auc": {
+      "Grade 1": 0.7660098522167488,
+      "Grade 2": 0.5840740740740741,
+      "Grade 3": 0.8537454545454546
+    },
+    "confusion_matrix": [
+      [
+        27,
+        7,
+        1
+      ],
+      [
+        45,
+        16,
+        29
+      ],
+      [
+        3,
+        10,
+        42
+      ]
+    ]
+  },
+  "adjacency_stats": {
+    "receptor_staging": {
+      "num_features": 5,
+      "num_dummy_cols": 13,
+      "threshold": 0.8,
+      "num_edges": 45447,
+      "density": 0.11258983612060547,
+      "num_isolated": 10
+    },
+    "demographics_progression": {
+      "num_features": 6,
+      "num_dummy_cols": 13,
+      "threshold": 0.8,
+      "num_edges": 116399,
+      "density": 0.2883654534816742,
+      "num_isolated": 0
+    },
+    "treatment": {
+      "num_features": 9,
+      "num_dummy_cols": 19,
+      "threshold": 0.8,
+      "num_edges": 126156,
+      "density": 0.3125373125076294,
+      "num_isolated": 3
+    },
+    "anatomical": {
+      "num_features": 5,
+      "num_dummy_cols": 10,
+      "threshold": 0.8,
+      "num_edges": 78244,
+      "density": 0.19384071230888367,
+      "num_isolated": 6
+    }
+  },
+  "predictions": [
+    {
+      "pid": "Breast_MRI_484",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5344892144203186,
+        0.3431716561317444,
+        0.12233921885490417
+      ]
+    },
+    {
+      "pid": "Breast_MRI_564",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5181981921195984,
+        0.3704040050506592,
+        0.1113978698849678
+      ]
+    },
+    {
+      "pid": "Breast_MRI_304",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3803841471672058,
+        0.4587451219558716,
+        0.1608707308769226
+      ]
+    },
+    {
+      "pid": "Breast_MRI_748",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11819565296173096,
+        0.2734697759151459,
+        0.6083345413208008
+      ]
+    },
+    {
+      "pid": "Breast_MRI_494",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.13025212287902832,
+        0.2309434860944748,
+        0.6388043761253357
+      ]
+    },
+    {
+      "pid": "Breast_MRI_775",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11603108048439026,
+        0.2500022351741791,
+        0.6339666247367859
+      ]
+    },
+    {
+      "pid": "Breast_MRI_109",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.40751078724861145,
+        0.4203253984451294,
+        0.17216378450393677
+      ]
+    },
+    {
+      "pid": "Breast_MRI_591",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.08617506921291351,
+        0.2292454093694687,
+        0.6845795512199402
+      ]
+    },
+    {
+      "pid": "Breast_MRI_451",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.35121849179267883,
+        0.36579132080078125,
+        0.2829901874065399
+      ]
+    },
+    {
+      "pid": "Breast_MRI_892",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.578905463218689,
+        0.34314438700675964,
+        0.07795010507106781
+      ]
+    },
+    {
+      "pid": "Breast_MRI_649",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.533436119556427,
+        0.35494887828826904,
+        0.11161497235298157
+      ]
+    },
+    {
+      "pid": "Breast_MRI_724",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.25647589564323425,
+        0.3643839955329895,
+        0.37914013862609863
+      ]
+    },
+    {
+      "pid": "Breast_MRI_244",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.19659903645515442,
+        0.3921462595462799,
+        0.41125473380088806
+      ]
+    },
+    {
+      "pid": "Breast_MRI_389",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.497390478849411,
+        0.3626561462879181,
+        0.1399533897638321
+      ]
+    },
+    {
+      "pid": "Breast_MRI_682",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.08678442984819412,
+        0.2036897987127304,
+        0.7095257639884949
+      ]
+    },
+    {
+      "pid": "Breast_MRI_565",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11898785829544067,
+        0.2367980033159256,
+        0.6442140936851501
+      ]
+    },
+    {
+      "pid": "Breast_MRI_917",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.06482379138469696,
+        0.16964350640773773,
+        0.7655327320098877
+      ]
+    },
+    {
+      "pid": "Breast_MRI_478",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.09667526930570602,
+        0.20534972846508026,
+        0.6979750394821167
+      ]
+    },
+    {
+      "pid": "Breast_MRI_553",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.49378737807273865,
+        0.3968258500099182,
+        0.1093868538737297
+      ]
+    },
+    {
+      "pid": "Breast_MRI_769",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.1490641087293625,
+        0.2571215331554413,
+        0.5938143730163574
+      ]
+    },
+    {
+      "pid": "Breast_MRI_782",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.28779053688049316,
+        0.43959423899650574,
+        0.2726151943206787
+      ]
+    },
+    {
+      "pid": "Breast_MRI_598",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4729360044002533,
+        0.4159184694290161,
+        0.11114553362131119
+      ]
+    },
+    {
+      "pid": "Breast_MRI_134",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.21889078617095947,
+        0.3429184854030609,
+        0.438190758228302
+      ]
+    },
+    {
+      "pid": "Breast_MRI_868",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3540528416633606,
+        0.45607873797416687,
+        0.18986846506595612
+      ]
+    },
+    {
+      "pid": "Breast_MRI_233",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.0562017485499382,
+        0.14570818841457367,
+        0.7980900406837463
+      ]
+    },
+    {
+      "pid": "Breast_MRI_362",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.10678110271692276,
+        0.2447330802679062,
+        0.6484857201576233
+      ]
+    },
+    {
+      "pid": "Breast_MRI_660",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.05087806656956673,
+        0.14284777641296387,
+        0.8062741756439209
+      ]
+    },
+    {
+      "pid": "Breast_MRI_529",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4756559729576111,
+        0.3756175935268402,
+        0.14872637391090393
+      ]
+    },
+    {
+      "pid": "Breast_MRI_422",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.154152050614357,
+        0.27452829480171204,
+        0.571319580078125
+      ]
+    },
+    {
+      "pid": "Breast_MRI_706",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.436283141374588,
+        0.433979332447052,
+        0.1297374814748764
+      ]
+    },
+    {
+      "pid": "Breast_MRI_462",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5808776617050171,
+        0.3454873263835907,
+        0.0736350417137146
+      ]
+    },
+    {
+      "pid": "Breast_MRI_613",
+      "true_label": 2,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5753057599067688,
+        0.3444722294807434,
+        0.0802220031619072
+      ]
+    },
+    {
+      "pid": "Breast_MRI_118",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5590568780899048,
+        0.3334001302719116,
+        0.1075429692864418
+      ]
+    },
+    {
+      "pid": "Breast_MRI_337",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.361171692609787,
+        0.349319189786911,
+        0.289509117603302
+      ]
+    },
+    {
+      "pid": "Breast_MRI_572",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11707247793674469,
+        0.23221008479595184,
+        0.6507174372673035
+      ]
+    },
+    {
+      "pid": "Breast_MRI_482",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.06454639136791229,
+        0.17068496346473694,
+        0.764768660068512
+      ]
+    },
+    {
+      "pid": "Breast_MRI_204",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5547547936439514,
+        0.336857408285141,
+        0.10838784277439117
+      ]
+    },
+    {
+      "pid": "Breast_MRI_747",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.39608094096183777,
+        0.4471593201160431,
+        0.15675975382328033
+      ]
+    },
+    {
+      "pid": "Breast_MRI_496",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.29910093545913696,
+        0.47978806495666504,
+        0.2211110144853592
+      ]
+    },
+    {
+      "pid": "Breast_MRI_576",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5779442191123962,
+        0.3337807059288025,
+        0.08827512711286545
+      ]
+    },
+    {
+      "pid": "Breast_MRI_279",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5817338228225708,
+        0.33555033802986145,
+        0.08271579444408417
+      ]
+    },
+    {
+      "pid": "Breast_MRI_677",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.32410886883735657,
+        0.36299076676368713,
+        0.3129003643989563
+      ]
+    },
+    {
+      "pid": "Breast_MRI_800",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5808776617050171,
+        0.3454873263835907,
+        0.0736350417137146
+      ]
+    },
+    {
+      "pid": "Breast_MRI_678",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4756357967853546,
+        0.4250767230987549,
+        0.0992874726653099
+      ]
+    },
+    {
+      "pid": "Breast_MRI_730",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5574366450309753,
+        0.35516849160194397,
+        0.08739475160837173
+      ]
+    },
+    {
+      "pid": "Breast_MRI_215",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4476955831050873,
+        0.3664083182811737,
+        0.18589608371257782
+      ]
+    },
+    {
+      "pid": "Breast_MRI_810",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.12375891208648682,
+        0.2513352036476135,
+        0.6249058842658997
+      ]
+    },
+    {
+      "pid": "Breast_MRI_680",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.466042160987854,
+        0.42109134793281555,
+        0.11286642402410507
+      ]
+    },
+    {
+      "pid": "Breast_MRI_843",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5072721838951111,
+        0.4189145863056183,
+        0.07381319999694824
+      ]
+    },
+    {
+      "pid": "Breast_MRI_773",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11938810348510742,
+        0.2257818877696991,
+        0.6548299789428711
+      ]
+    },
+    {
+      "pid": "Breast_MRI_449",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.32039740681648254,
+        0.4027197062969208,
+        0.2768828868865967
+      ]
+    },
+    {
+      "pid": "Breast_MRI_281",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.18842655420303345,
+        0.29037588834762573,
+        0.5211975574493408
+      ]
+    },
+    {
+      "pid": "Breast_MRI_718",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3348539471626282,
+        0.39183855056762695,
+        0.2733074724674225
+      ]
+    },
+    {
+      "pid": "Breast_MRI_723",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.09689953178167343,
+        0.2061004489660263,
+        0.6969999670982361
+      ]
+    },
+    {
+      "pid": "Breast_MRI_239",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.24703164398670197,
+        0.3689938485622406,
+        0.38397446274757385
+      ]
+    },
+    {
+      "pid": "Breast_MRI_229",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4539319574832916,
+        0.4169779121875763,
+        0.12909013032913208
+      ]
+    },
+    {
+      "pid": "Breast_MRI_793",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.08284218609333038,
+        0.18295735120773315,
+        0.7342004776000977
+      ]
+    },
+    {
+      "pid": "Breast_MRI_260",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.10793600231409073,
+        0.2712659239768982,
+        0.6207980513572693
+      ]
+    },
+    {
+      "pid": "Breast_MRI_770",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5808776617050171,
+        0.3454873263835907,
+        0.0736350417137146
+      ]
+    },
+    {
+      "pid": "Breast_MRI_456",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.17703358829021454,
+        0.284617155790329,
+        0.5383492112159729
+      ]
+    },
+    {
+      "pid": "Breast_MRI_918",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3693556487560272,
+        0.39540866017341614,
+        0.23523575067520142
+      ]
+    },
+    {
+      "pid": "Breast_MRI_259",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5650684833526611,
+        0.35380828380584717,
+        0.08112319558858871
+      ]
+    },
+    {
+      "pid": "Breast_MRI_915",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.12820424139499664,
+        0.2591859996318817,
+        0.6126098036766052
+      ]
+    },
+    {
+      "pid": "Breast_MRI_424",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.1745220124721527,
+        0.36663392186164856,
+        0.45884400606155396
+      ]
+    },
+    {
+      "pid": "Breast_MRI_142",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.21217237412929535,
+        0.3141162693500519,
+        0.47371137142181396
+      ]
+    },
+    {
+      "pid": "Breast_MRI_398",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.05316593125462532,
+        0.16338440775871277,
+        0.783449649810791
+      ]
+    },
+    {
+      "pid": "Breast_MRI_333",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.24499361217021942,
+        0.33808183670043945,
+        0.4169245660305023
+      ]
+    },
+    {
+      "pid": "Breast_MRI_695",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11609219759702682,
+        0.33187294006347656,
+        0.5520347952842712
+      ]
+    },
+    {
+      "pid": "Breast_MRI_578",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.17835770547389984,
+        0.45714277029037476,
+        0.364499568939209
+      ]
+    },
+    {
+      "pid": "Breast_MRI_472",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.49196508526802063,
+        0.35793229937553406,
+        0.1501026302576065
+      ]
+    },
+    {
+      "pid": "Breast_MRI_795",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4865231513977051,
+        0.40988287329673767,
+        0.10359399765729904
+      ]
+    },
+    {
+      "pid": "Breast_MRI_267",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.08078108727931976,
+        0.18676622211933136,
+        0.7324526906013489
+      ]
+    },
+    {
+      "pid": "Breast_MRI_459",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.26350823044776917,
+        0.36128032207489014,
+        0.3752114176750183
+      ]
+    },
+    {
+      "pid": "Breast_MRI_733",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5353630781173706,
+        0.3551904857158661,
+        0.10944642871618271
+      ]
+    },
+    {
+      "pid": "Breast_MRI_612",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.07348781079053879,
+        0.18346354365348816,
+        0.7430486679077148
+      ]
+    },
+    {
+      "pid": "Breast_MRI_341",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.578905463218689,
+        0.34314438700675964,
+        0.07795010507106781
+      ]
+    },
+    {
+      "pid": "Breast_MRI_002",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.07188708335161209,
+        0.16794323921203613,
+        0.7601696848869324
+      ]
+    },
+    {
+      "pid": "Breast_MRI_866",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.24326872825622559,
+        0.49059802293777466,
+        0.26613321900367737
+      ]
+    },
+    {
+      "pid": "Breast_MRI_899",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.22975844144821167,
+        0.3458062410354614,
+        0.42443525791168213
+      ]
+    },
+    {
+      "pid": "Breast_MRI_319",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.547856330871582,
+        0.38460004329681396,
+        0.06754361838102341
+      ]
+    },
+    {
+      "pid": "Breast_MRI_198",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.320232093334198,
+        0.36750078201293945,
+        0.3122672140598297
+      ]
+    },
+    {
+      "pid": "Breast_MRI_801",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.48590120673179626,
+        0.4133642911911011,
+        0.10073453187942505
+      ]
+    },
+    {
+      "pid": "Breast_MRI_802",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5203344821929932,
+        0.36856555938720703,
+        0.11109989136457443
+      ]
+    },
+    {
+      "pid": "Breast_MRI_003",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5296540856361389,
+        0.3906725347042084,
+        0.07967344671487808
+      ]
+    },
+    {
+      "pid": "Breast_MRI_906",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.2307000756263733,
+        0.276826411485672,
+        0.4924735426902771
+      ]
+    },
+    {
+      "pid": "Breast_MRI_659",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.1362951397895813,
+        0.2591075003147125,
+        0.6045973896980286
+      ]
+    },
+    {
+      "pid": "Breast_MRI_805",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.1110629290342331,
+        0.22161632776260376,
+        0.667320728302002
+      ]
+    },
+    {
+      "pid": "Breast_MRI_081",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5253438949584961,
+        0.40089109539985657,
+        0.07376501709222794
+      ]
+    },
+    {
+      "pid": "Breast_MRI_334",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.15772360563278198,
+        0.2737078070640564,
+        0.5685686469078064
+      ]
+    },
+    {
+      "pid": "Breast_MRI_057",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.21093985438346863,
+        0.4752240777015686,
+        0.313836008310318
+      ]
+    },
+    {
+      "pid": "Breast_MRI_387",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3286312222480774,
+        0.41905832290649414,
+        0.25231045484542847
+      ]
+    },
+    {
+      "pid": "Breast_MRI_853",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.14860637485980988,
+        0.24921484291553497,
+        0.6021787524223328
+      ]
+    },
+    {
+      "pid": "Breast_MRI_009",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.0826997458934784,
+        0.19943280518054962,
+        0.7178674936294556
+      ]
+    },
+    {
+      "pid": "Breast_MRI_376",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.598703145980835,
+        0.33429670333862305,
+        0.06700021028518677
+      ]
+    },
+    {
+      "pid": "Breast_MRI_454",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.38145560026168823,
+        0.40449821949005127,
+        0.2140461951494217
+      ]
+    },
+    {
+      "pid": "Breast_MRI_904",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5058436989784241,
+        0.36679041385650635,
+        0.12736594676971436
+      ]
+    },
+    {
+      "pid": "Breast_MRI_309",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5058055520057678,
+        0.34456801414489746,
+        0.1496264636516571
+      ]
+    },
+    {
+      "pid": "Breast_MRI_169",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.49142512679100037,
+        0.38450369238853455,
+        0.12407124042510986
+      ]
+    },
+    {
+      "pid": "Breast_MRI_883",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.2030986100435257,
+        0.41354572772979736,
+        0.38335561752319336
+      ]
+    },
+    {
+      "pid": "Breast_MRI_269",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.23387983441352844,
+        0.36935660243034363,
+        0.3967636227607727
+      ]
+    },
+    {
+      "pid": "Breast_MRI_650",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.23752827942371368,
+        0.3162163197994232,
+        0.4462554454803467
+      ]
+    },
+    {
+      "pid": "Breast_MRI_052",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.36521169543266296,
+        0.3771299123764038,
+        0.25765836238861084
+      ]
+    },
+    {
+      "pid": "Breast_MRI_419",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.545854389667511,
+        0.3417467772960663,
+        0.1123988926410675
+      ]
+    },
+    {
+      "pid": "Breast_MRI_158",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.07397229224443436,
+        0.23502419888973236,
+        0.6910034418106079
+      ]
+    },
+    {
+      "pid": "Breast_MRI_806",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.0654154121875763,
+        0.15839414298534393,
+        0.7761904001235962
+      ]
+    },
+    {
+      "pid": "Breast_MRI_343",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4454561173915863,
+        0.3923287093639374,
+        0.16221511363983154
+      ]
+    },
+    {
+      "pid": "Breast_MRI_007",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.34971219301223755,
+        0.4067571461200714,
+        0.24353070557117462
+      ]
+    },
+    {
+      "pid": "Breast_MRI_166",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.12633289396762848,
+        0.21972456574440002,
+        0.6539424657821655
+      ]
+    },
+    {
+      "pid": "Breast_MRI_540",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4996582865715027,
+        0.39311015605926514,
+        0.10723156481981277
+      ]
+    },
+    {
+      "pid": "Breast_MRI_643",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5231561064720154,
+        0.3851393163204193,
+        0.09170452505350113
+      ]
+    },
+    {
+      "pid": "Breast_MRI_200",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.23803779482841492,
+        0.32923024892807007,
+        0.4327319264411926
+      ]
+    },
+    {
+      "pid": "Breast_MRI_556",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5772058963775635,
+        0.34358203411102295,
+        0.07921212166547775
+      ]
+    },
+    {
+      "pid": "Breast_MRI_305",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5078047513961792,
+        0.3567841649055481,
+        0.13541114330291748
+      ]
+    },
+    {
+      "pid": "Breast_MRI_492",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5135999917984009,
+        0.36970964074134827,
+        0.11669036746025085
+      ]
+    },
+    {
+      "pid": "Breast_MRI_437",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.07881129533052444,
+        0.20006103813648224,
+        0.7211276888847351
+      ]
+    },
+    {
+      "pid": "Breast_MRI_632",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.12496813386678696,
+        0.2495870143175125,
+        0.6254448294639587
+      ]
+    },
+    {
+      "pid": "Breast_MRI_661",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.0824238732457161,
+        0.18065528571605682,
+        0.7369208335876465
+      ]
+    },
+    {
+      "pid": "Breast_MRI_721",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.547856330871582,
+        0.38460004329681396,
+        0.06754361838102341
+      ]
+    },
+    {
+      "pid": "Breast_MRI_861",
+      "true_label": 0,
+      "predicted_label": 2,
+      "probabilities": [
+        0.17752684652805328,
+        0.402325302362442,
+        0.4201478958129883
+      ]
+    },
+    {
+      "pid": "Breast_MRI_558",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.20718732476234436,
+        0.30816635489463806,
+        0.48464635014533997
+      ]
+    },
+    {
+      "pid": "Breast_MRI_862",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4978898763656616,
+        0.36058348417282104,
+        0.14152668416500092
+      ]
+    },
+    {
+      "pid": "Breast_MRI_299",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4716483950614929,
+        0.39119410514831543,
+        0.13715748488903046
+      ]
+    },
+    {
+      "pid": "Breast_MRI_585",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4539843201637268,
+        0.41756099462509155,
+        0.12845465540885925
+      ]
+    },
+    {
+      "pid": "Breast_MRI_849",
+      "true_label": 2,
+      "predicted_label": 0,
+      "probabilities": [
+        0.40328532457351685,
+        0.3852437138557434,
+        0.21147102117538452
+      ]
+    },
+    {
+      "pid": "Breast_MRI_416",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.26010897755622864,
+        0.38758620619773865,
+        0.3523048460483551
+      ]
+    },
+    {
+      "pid": "Breast_MRI_104",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.47404685616493225,
+        0.37052175402641296,
+        0.15543143451213837
+      ]
+    },
+    {
+      "pid": "Breast_MRI_909",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5708505511283875,
+        0.34741565585136414,
+        0.08173380047082901
+      ]
+    },
+    {
+      "pid": "Breast_MRI_412",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.46630194783210754,
+        0.42127329111099243,
+        0.11242478340864182
+      ]
+    },
+    {
+      "pid": "Breast_MRI_707",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.36953839659690857,
+        0.42044830322265625,
+        0.2100132405757904
+      ]
+    },
+    {
+      "pid": "Breast_MRI_392",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.14976155757904053,
+        0.3706286549568176,
+        0.47960972785949707
+      ]
+    },
+    {
+      "pid": "Breast_MRI_036",
+      "true_label": 2,
+      "predicted_label": 0,
+      "probabilities": [
+        0.3838616907596588,
+        0.3647300899028778,
+        0.2514081597328186
+      ]
+    },
+    {
+      "pid": "Breast_MRI_252",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.17382173240184784,
+        0.3558092713356018,
+        0.4703689515590668
+      ]
+    },
+    {
+      "pid": "Breast_MRI_413",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.44974660873413086,
+        0.3692801892757416,
+        0.18097321689128876
+      ]
+    },
+    {
+      "pid": "Breast_MRI_331",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3000478446483612,
+        0.3729536533355713,
+        0.32699844241142273
+      ]
+    },
+    {
+      "pid": "Breast_MRI_903",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.1977275311946869,
+        0.2926129400730133,
+        0.5096595287322998
+      ]
+    },
+    {
+      "pid": "Breast_MRI_428",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3656391203403473,
+        0.42297154664993286,
+        0.21138933300971985
+      ]
+    },
+    {
+      "pid": "Breast_MRI_583",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5228688716888428,
+        0.38835740089416504,
+        0.08877377957105637
+      ]
+    },
+    {
+      "pid": "Breast_MRI_666",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.19182200729846954,
+        0.3235887885093689,
+        0.48458924889564514
+      ]
+    },
+    {
+      "pid": "Breast_MRI_910",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.501859188079834,
+        0.3876849412918091,
+        0.1104559674859047
+      ]
+    },
+    {
+      "pid": "Breast_MRI_488",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.09839887917041779,
+        0.20858708024024963,
+        0.6930140256881714
+      ]
+    },
+    {
+      "pid": "Breast_MRI_411",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.36953839659690857,
+        0.42044830322265625,
+        0.2100132405757904
+      ]
+    },
+    {
+      "pid": "Breast_MRI_702",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5172305107116699,
+        0.37446728348731995,
+        0.10830221325159073
+      ]
+    },
+    {
+      "pid": "Breast_MRI_318",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.38937970995903015,
+        0.3754632771015167,
+        0.23515701293945312
+      ]
+    },
+    {
+      "pid": "Breast_MRI_817",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.03369327262043953,
+        0.11882078647613525,
+        0.8474858999252319
+      ]
+    },
+    {
+      "pid": "Breast_MRI_628",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5181981921195984,
+        0.3704040050506592,
+        0.1113978698849678
+      ]
+    },
+    {
+      "pid": "Breast_MRI_365",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.328399658203125,
+        0.4196022152900696,
+        0.25199806690216064
+      ]
+    },
+    {
+      "pid": "Breast_MRI_178",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.09084602445363998,
+        0.21106739342212677,
+        0.6980866193771362
+      ]
+    },
+    {
+      "pid": "Breast_MRI_469",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.35832828283309937,
+        0.3915477693080902,
+        0.25012391805648804
+      ]
+    },
+    {
+      "pid": "Breast_MRI_247",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4753541648387909,
+        0.36688950657844543,
+        0.15775641798973083
+      ]
+    },
+    {
+      "pid": "Breast_MRI_122",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.17814582586288452,
+        0.27373185753822327,
+        0.5481223464012146
+      ]
+    },
+    {
+      "pid": "Breast_MRI_359",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.39094269275665283,
+        0.3618393540382385,
+        0.24721799790859222
+      ]
+    },
+    {
+      "pid": "Breast_MRI_838",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.10157368332147598,
+        0.26284366846084595,
+        0.6355826258659363
+      ]
+    },
+    {
+      "pid": "Breast_MRI_073",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4637623727321625,
+        0.3685495853424072,
+        0.16768799722194672
+      ]
+    },
+    {
+      "pid": "Breast_MRI_144",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.17938637733459473,
+        0.31920114159584045,
+        0.5014124512672424
+      ]
+    },
+    {
+      "pid": "Breast_MRI_579",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.29356375336647034,
+        0.38740772008895874,
+        0.3190285861492157
+      ]
+    },
+    {
+      "pid": "Breast_MRI_291",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3081341087818146,
+        0.3537493646144867,
+        0.33811649680137634
+      ]
+    },
+    {
+      "pid": "Breast_MRI_920",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5060146450996399,
+        0.41978320479393005,
+        0.07420212775468826
+      ]
+    },
+    {
+      "pid": "Breast_MRI_922",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5762624144554138,
+        0.34564849734306335,
+        0.07808906584978104
+      ]
+    },
+    {
+      "pid": "Breast_MRI_896",
+      "true_label": 0,
+      "predicted_label": 1,
+      "probabilities": [
+        0.30173882842063904,
+        0.4655104875564575,
+        0.23275065422058105
+      ]
+    },
+    {
+      "pid": "Breast_MRI_308",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.19422422349452972,
+        0.3564607501029968,
+        0.44931501150131226
+      ]
+    },
+    {
+      "pid": "Breast_MRI_743",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.45450952649116516,
+        0.37806543707847595,
+        0.16742493212223053
+      ]
+    },
+    {
+      "pid": "Breast_MRI_539",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.21404777467250824,
+        0.363084077835083,
+        0.42286816239356995
+      ]
+    },
+    {
+      "pid": "Breast_MRI_858",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5837228894233704,
+        0.33687886595726013,
+        0.07939823716878891
+      ]
+    },
+    {
+      "pid": "Breast_MRI_038",
+      "true_label": 2,
+      "predicted_label": 1,
+      "probabilities": [
+        0.28097131848335266,
+        0.5493370294570923,
+        0.16969166696071625
+      ]
+    },
+    {
+      "pid": "Breast_MRI_438",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.08891142904758453,
+        0.20941902697086334,
+        0.7016695141792297
+      ]
+    },
+    {
+      "pid": "Breast_MRI_687",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.11618682742118835,
+        0.2790941298007965,
+        0.6047191023826599
+      ]
+    },
+    {
+      "pid": "Breast_MRI_121",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5207366943359375,
+        0.3584299683570862,
+        0.12083328515291214
+      ]
+    },
+    {
+      "pid": "Breast_MRI_880",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5808776617050171,
+        0.3454873263835907,
+        0.0736350417137146
+      ]
+    },
+    {
+      "pid": "Breast_MRI_627",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5203344821929932,
+        0.36856555938720703,
+        0.11109989136457443
+      ]
+    },
+    {
+      "pid": "Breast_MRI_885",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.3094831705093384,
+        0.37205618619918823,
+        0.31846070289611816
+      ]
+    },
+    {
+      "pid": "Breast_MRI_758",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.08770252019166946,
+        0.20681779086589813,
+        0.7054796814918518
+      ]
+    },
+    {
+      "pid": "Breast_MRI_814",
+      "true_label": 0,
+      "predicted_label": 0,
+      "probabilities": [
+        0.3962678015232086,
+        0.352723628282547,
+        0.2510085999965668
+      ]
+    },
+    {
+      "pid": "Breast_MRI_201",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5205633044242859,
+        0.3567035496234894,
+        0.12273313850164413
+      ]
+    },
+    {
+      "pid": "Breast_MRI_105",
+      "true_label": 1,
+      "predicted_label": 2,
+      "probabilities": [
+        0.10902929306030273,
+        0.2335490584373474,
+        0.6574216485023499
+      ]
+    },
+    {
+      "pid": "Breast_MRI_199",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5753057599067688,
+        0.3444722294807434,
+        0.0802220031619072
+      ]
+    },
+    {
+      "pid": "Breast_MRI_830",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.086064912378788,
+        0.1867060512304306,
+        0.727229118347168
+      ]
+    },
+    {
+      "pid": "Breast_MRI_829",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.5808776617050171,
+        0.3454873263835907,
+        0.0736350417137146
+      ]
+    },
+    {
+      "pid": "Breast_MRI_548",
+      "true_label": 1,
+      "predicted_label": 0,
+      "probabilities": [
+        0.4338189959526062,
+        0.37136033177375793,
+        0.19482065737247467
+      ]
+    },
+    {
+      "pid": "Breast_MRI_882",
+      "true_label": 2,
+      "predicted_label": 2,
+      "probabilities": [
+        0.05974862352013588,
+        0.15118205547332764,
+        0.7890693545341492
+      ]
+    },
+    {
+      "pid": "Breast_MRI_246",
+      "true_label": 1,
+      "predicted_label": 1,
+      "probabilities": [
+        0.21558666229248047,
+        0.5275421142578125,
+        0.25687116384506226
+      ]
+    }
+  ]
+}

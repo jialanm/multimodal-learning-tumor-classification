@@ -11,16 +11,19 @@ Four baseline approaches are implemented:
 
 ## Results Summary
 
-### Full-dataset results (899 patients)
+### Full-dataset results
 
-| Method | Split | Macro F1 | Balanced Acc | Accuracy | Macro AUC |
-|--------|-------|----------|--------------|----------|-----------|
-| Swin-Tiny + MLP | 80/20 | 0.513 | 0.547 | 0.511 | 0.725 |
-| **Graph-Augmented Swin + MLP** | **60/10/30** | **0.541** | **0.584** | **0.544** | **0.727** |
-| Graph-Augmented Swin + MLP | 70/10/20 | 0.515 | 0.535 | 0.535 | 0.701 |
-| Graph-Augmented Swin + MLP | 80/20 | 0.471 | 0.571 | 0.472 | 0.735 |
-| DMGI (LogReg on frozen H) | 60/10/30 | 0.424 ± 0.020 | -- | 0.529 | -- |
-| DMGI (fine-tuned MLP) | 60/10/30 | 0.451 ± 0.034 | -- | -- | -- |
+| Method | Patients | Split | Macro F1 | Balanced Acc | Accuracy | Macro AUC |
+|--------|----------|-------|----------|--------------|----------|-----------|
+| Swin-Tiny + MLP | 899 | 80/20 | 0.513 | 0.547 | 0.511 | 0.725 |
+| Swin-Tiny + MLP | 922 | 80/20 | 0.515 | 0.522 | 0.530 | 0.681 |
+| **Graph-Augmented Swin + MLP** | **899** | **60/10/30** | **0.541** | **0.584** | **0.544** | **0.727** |
+| Graph-Augmented Swin + MLP | 922 | 70/10/20 | 0.515 | 0.535 | 0.535 | 0.701 |
+| Graph-Augmented Swin + MLP | 899 | 80/20 | 0.471 | 0.571 | 0.472 | 0.735 |
+| DMGI (LogReg on frozen H) | 899 | 60/10/30 | 0.424 ± 0.020 | -- | 0.529 | -- |
+| DMGI (fine-tuned MLP) | 899 | 60/10/30 | 0.451 ± 0.034 | -- | -- | -- |
+
+Patient counts differ between runs; the 899-patient cohort is listed in `data/patient_id_list.csv`.
 
 ### Ovis2 VLM few-shot results (subset)
 
@@ -30,7 +33,7 @@ Four baseline approaches are implemented:
 | Ovis2-4B few-shot | None (full-size) | 60 | 0.290 | 0.301 | 0.300 |
 | Ovis2-4B few-shot | Fixed 256x256 | 100 | 0.411 | 0.414 | 0.450 |
 
-Detailed per-experiment results (JSON, plots, logs) are in `output/`.
+Detailed per-experiment results (JSON summaries, plots, logs) are committed under `results/`. Larger run artifacts (model weights, embeddings, feature caches, composites) stay in the git-ignored `output/`.
 
 ## Project Structure
 
@@ -57,7 +60,7 @@ Detailed per-experiment results (JSON, plots, logs) are in `output/`.
 │   ├── Duke-Breast-Cancer-MRI/        # DICOM folders per patient (not included)
 │   ├── Annotation_Boxes.xlsx          # Tumor bounding box annotations
 │   └── Clinical_and_Other_Features_Full.xlsx
-├── output/                            # Runtime artifacts (composites, caches, feature files)
+├── output/                            # Runtime artifacts, git-ignored (composites, caches, weights)
 │   ├── ovis2_proportional_crop/       # Composites + results (proportional crop)
 │   ├── ovis2_nocrop/                  # Composites + results (no crop)
 │   ├── ovis2_fixed256_crop/           # Composites + results (256x256 crop)
@@ -67,6 +70,17 @@ Detailed per-experiment results (JSON, plots, logs) are in `output/`.
 │   ├── graph_augmented/               # Graph-augmented (60/10/30 split)
 │   ├── graph_augmented_80_20/         # Graph-augmented (80/20 split)
 │   └── graph_augmented_70_10_20/      # Graph-augmented (70/10/20 split)
+└── results/                           # Committed summary artifacts (JSON, plots, logs)
+    ├── ovis2_proportional_crop/
+    ├── ovis2_nocrop/
+    ├── ovis2_256crop/
+    ├── swin_baseline/                 # Swin, 100 patients
+    ├── swin_899/                      # Swin, 899 patients
+    ├── swin_922/                      # Swin, 922 patients
+    ├── dmgi_baseline/
+    ├── graph_augmented/               # 60/10/30 split
+    ├── graph_augmented_80_20/         # 80/20 split
+    └── graph_augmented_70_10_20/      # 70/10/20 split, 922 patients
 ```
 
 ## Data
