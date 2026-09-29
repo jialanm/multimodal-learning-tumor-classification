@@ -29,7 +29,7 @@ def load_clinical_dataframe(clinical_file: str = CLINICAL_FILE) -> pd.DataFrame:
             seen[c] = 0
             unique_cols.append(c)
 
-    df = raw.iloc[3:].copy()
+    df = raw.iloc[2:].copy()
     df.columns = unique_cols
     df = df.reset_index(drop=True)
 
