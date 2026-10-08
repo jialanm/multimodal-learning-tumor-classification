@@ -51,7 +51,6 @@ Detailed per-experiment results (JSON summaries, plots, logs) are committed unde
 .
 ├── README.md
 ├── pyproject.toml
-├── .gitignore
 └── multimodal_tumor_classification/   # Python package
     ├── __init__.py
     ├── __main__.py                    # CLI entry point
