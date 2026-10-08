@@ -52,43 +52,20 @@ Detailed per-experiment results (JSON summaries, plots, logs) are committed unde
 ├── README.md
 ├── pyproject.toml
 ├── .gitignore
-├── multimodal_tumor_classification/   # Python package
-│   ├── __init__.py
-│   ├── __main__.py                    # CLI entry point
-│   ├── config.py                      # Paths, labels, crop modes, clinical features
-│   ├── dicom_utils.py                 # DICOM loading, series identification
-│   ├── clinical.py                    # Clinical xlsx parsing, text builder, feature encoding
-│   ├── imaging.py                     # DCE composites, cropping, slice sampling
-│   ├── dataset.py                     # Dataset building (orchestrates DICOM + clinical)
-│   ├── prompts.py                     # Few-shot example selection, prompt formatting
-│   ├── ovis2_pipeline.py              # Ovis2 VLM model loading + inference
-│   ├── swin_pipeline.py               # Swin-Tiny + MLP training pipeline
-│   ├── dmgi_pipeline.py               # DMGI multiplex graph infomax pipeline
-│   ├── graph_augmented_pipeline.py    # Graph-augmented Swin + MLP pipeline
-│   └── evaluation.py                  # Metrics, plotting, experiment summaries
-├── data/
-│   ├── Duke-Breast-Cancer-MRI/        # DICOM folders per patient (not included)
-│   ├── Annotation_Boxes.xlsx          # Tumor bounding box annotations
-│   └── Clinical_and_Other_Features_Full.xlsx
-├── output/                            # Runtime artifacts, git-ignored (composites, caches, weights)
-│   ├── ovis2_proportional_crop/       # Ovis2 composites + results (proportional crop)
-│   ├── ovis2_nocrop/                  # Ovis2 composites + results (no crop)
-│   ├── ovis2_fixed256/composites/     # DCE composites for all 922 patients (256x256 crop)
-│   ├── swin_baseline/                 # Swin feature cache for all 922 patients
-│   ├── swin_922_valsplit/             # Swin run: results, weights, embeddings
-│   ├── graph_augmented_922/           # Graph-augmented run: results, weights, embeddings
-│   └── dmgi_922/                      # DMGI run: results, consensus embeddings
-└── results/                           # Committed summary artifacts (JSON, plots, summaries)
-    ├── ovis2_proportional_crop/       # Ovis2, 60 patients
-    ├── ovis2_nocrop/                  # Ovis2, 60 patients
-    ├── ovis2_256crop/                 # Ovis2, 100 patients
-    ├── swin_baseline/                 # Swin, 100 patients
-    ├── swin_899/                      # Swin, report run (899 patients)
-    ├── graph_augmented_899/           # Graph-augmented, report run (899 patients)
-    ├── dmgi_899/                      # DMGI, report run (899 patients)
-    ├── swin_922/                      # Swin, post-report rerun (922 patients)
-    ├── graph_augmented_922/           # Graph-augmented, post-report rerun (922 patients)
-    └── dmgi_922/                      # DMGI, post-report rerun (922 patients)
+└── multimodal_tumor_classification/   # Python package
+    ├── __init__.py
+    ├── __main__.py                    # CLI entry point
+    ├── config.py                      # Paths, labels, crop modes, clinical features
+    ├── dicom_utils.py                 # DICOM loading, series identification
+    ├── clinical.py                    # Clinical xlsx parsing, text builder, feature encoding
+    ├── imaging.py                     # DCE composites, cropping, slice sampling
+    ├── dataset.py                     # Dataset building (orchestrates DICOM + clinical)
+    ├── prompts.py                     # Few-shot example selection, prompt formatting
+    ├── ovis2_pipeline.py              # Ovis2 VLM model loading + inference
+    ├── swin_pipeline.py               # Swin-Tiny + MLP training pipeline
+    ├── dmgi_pipeline.py               # DMGI multiplex graph infomax pipeline
+    ├── graph_augmented_pipeline.py    # Graph-augmented Swin + MLP pipeline
+    └── evaluation.py                  # Metrics, plotting, experiment summaries
 ```
 
 ## Data
